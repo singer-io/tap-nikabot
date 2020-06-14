@@ -1,13 +1,15 @@
 #!/usr/bin/env python3
 import os
 import json
+import requests
 import singer
 from singer import utils, metadata
 from singer.catalog import Catalog, CatalogEntry
 from singer.schema import Schema
 
 
-REQUIRED_CONFIG_KEYS = ["start_date", "username", "password"]
+BASE_URL = "https://api.nikabot.com"
+REQUIRED_CONFIG_KEYS = ["start_date", "access_token"]
 LOGGER = singer.get_logger()
 
 
@@ -17,12 +19,15 @@ def get_abs_path(path):
 
 def load_schemas():
     """ Load schemas from schemas folder """
-    schemas = {}
-    for filename in os.listdir(get_abs_path("schemas")):
-        path = get_abs_path("schemas") + "/" + filename
-        file_raw = filename.replace(".json", "")
-        with open(path) as file:
-            schemas[file_raw] = Schema.from_dict(json.load(file))
+    response = requests.get(f"{BASE_URL}/v2/api-docs?group=public")
+    response.raise_for_status()
+    swagger = response.json()
+    schemas = {
+        "users": Schema.from_dict({
+            "type": "array",
+            "items": swagger["definitions"]["UserDTO"]
+        })
+    }
     return schemas
 
 
