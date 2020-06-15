@@ -2,7 +2,7 @@
 import singer
 from singer import utils
 from singer.catalog import Catalog
-from .streams import user
+from .streams import users
 from .client import Client
 
 
@@ -13,7 +13,7 @@ REQUIRED_CONFIG_KEYS = ["access_token"]
 
 def discover():
     swagger = Client.fetch_swagger_definition()
-    schemas = [user.get_schema(swagger)]
+    schemas = [users.get_schema(swagger)]
     return Catalog(schemas)
 
 
@@ -32,7 +32,7 @@ def sync(config, state, catalog):
         )
 
         max_bookmark = ""
-        for rows in user.get_records(client):
+        for rows in users.get_records(client):
             # write one or more rows to the stream:
             singer.write_records(stream.tap_stream_id, rows)
             if bookmark_column:

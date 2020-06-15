@@ -26,8 +26,13 @@ lint:
 		black -l 120 tap_nikabot *.py; \
 		pylint --exit-zero tap_nikabot *.py
 
+test: lint
+	source $(VENV_ACTIVATE); \
+        coverage run --source=tap_nikabot -m pytest; \
+		coverage report --skip-covered
+
 db:
 	docker run -e POSTGRES_PASSWORD=stitches -p 5432:5432 --rm postgres
 
-.PHONY: init lint db
+.PHONY: init lint test db
 .SILENT:
