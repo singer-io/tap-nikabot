@@ -6,10 +6,13 @@ from singer.catalog import Catalog, CatalogEntry
 from singer.schema import Schema
 
 
+LOGGER = singer.get_logger()
 BASE_URL = "https://api.nikabot.com"
 MAX_API_PAGES = 10000
-REQUIRED_CONFIG_KEYS = ["start_date", "access_token"]
-LOGGER = singer.get_logger()
+DEFAULT_CONFIG = {
+    "page_size": 1000
+}
+REQUIRED_CONFIG_KEYS = ["access_token"]
 
 
 def user_schema():
@@ -25,6 +28,7 @@ def user_schema():
         schema.to_dict(),
         stream_id,
         key_properties,
+        valid_replication_keys=["updated_at"],
     )
     catalog_entry = CatalogEntry(
             tap_stream_id=stream_id,
@@ -32,7 +36,7 @@ def user_schema():
             schema=schema,
             key_properties=key_properties,
             metadata=stream_metadata,
-            replication_key=None,
+            replication_key="updated_at",
             replication_method=None,
         )
     return catalog_entry
@@ -43,17 +47,16 @@ def discover():
     return Catalog(streams)
 
 
-def user_data(access_token):
+def user_data(access_token, page_size):
     for page in range(MAX_API_PAGES):
-        params = {"limit": 1000, "page": page}
+        params = {"limit": page_size, "page": page}
         headers = {"Authorization": f"Bearer {access_token}"}
         response = requests.get(f"{BASE_URL}/api/v1/users", params=params, headers=headers)
         response.raise_for_status()
         data = response.json()
         if len(data["result"]) == 0:
             break
-        for item in data["result"]:
-            yield item
+        yield data["result"]
 
 
 def sync(config, state, catalog):
@@ -63,23 +66,23 @@ def sync(config, state, catalog):
         LOGGER.info("Syncing stream:" + stream.tap_stream_id)
 
         bookmark_column = stream.replication_key
-        is_sorted = True  # TODO: indicate whether data is sorted ascending on bookmark value
+        is_sorted = False
 
         singer.write_schema(
             stream_name=stream.tap_stream_id, schema=stream.schema.to_dict(), key_properties=stream.key_properties,
         )
 
-        max_bookmark = None
-        for row in user_data(config["access_token"]):
+        max_bookmark = ""
+        for rows in user_data(config["access_token"], config["page_size"]):
             # write one or more rows to the stream:
-            singer.write_records(stream.tap_stream_id, [row])
+            singer.write_records(stream.tap_stream_id, rows)
             if bookmark_column:
                 if is_sorted:
                     # update bookmark to latest value
-                    singer.write_state({stream.tap_stream_id: row[bookmark_column]})
+                    singer.write_state({stream.tap_stream_id: rows[-1][bookmark_column]})
                 else:
                     # if data unsorted, save max value until end of writes
-                    max_bookmark = max(max_bookmark, row[bookmark_column])
+                    max_bookmark = max(max_bookmark, max([row[bookmark_column] for row in rows]))
         if bookmark_column and not is_sorted:
             singer.write_state({stream.tap_stream_id: max_bookmark})
     return
@@ -89,6 +92,7 @@ def sync(config, state, catalog):
 def main():
     # Parse command line arguments
     args = utils.parse_args(REQUIRED_CONFIG_KEYS)
+    config = dict(DEFAULT_CONFIG, **args.config)
 
     # If discover flag was passed, run discovery mode and dump output to stdout
     if args.discover:
@@ -100,7 +104,7 @@ def main():
             catalog = args.catalog
         else:
             catalog = discover()
-        sync(args.config, args.state, catalog)
+        sync(config, args.state, catalog)
 
 
 if __name__ == "__main__":
