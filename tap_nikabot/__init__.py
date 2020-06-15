@@ -1,6 +1,4 @@
 #!/usr/bin/env python3
-import os
-import json
 import requests
 import singer
 from singer import utils, metadata
@@ -13,25 +11,20 @@ REQUIRED_CONFIG_KEYS = ["start_date", "access_token"]
 LOGGER = singer.get_logger()
 
 
-def get_abs_path(path):
-    return os.path.join(os.path.dirname(os.path.realpath(__file__)), path)
-
-
 def user_schema():
-    """ Load user stream schema from swagger definition """
+    """ Load user schema from swagger definition """
     response = requests.get(f"{BASE_URL}/v2/api-docs?group=public")
     response.raise_for_status()
     swagger = response.json()
-    raw_schema = swagger["definitions"]["UserDTO"]
+    schema = Schema.from_dict(swagger["definitions"]["UserDTO"])
 
     stream_id = "users"
     key_properties = ["id"]
     stream_metadata = metadata.get_standard_metadata(
-        raw_schema,
+        schema.to_dict(),
         stream_id,
         key_properties,
     )
-    schema = Schema.from_dict(raw_schema)
     catalog_entry = CatalogEntry(
             tap_stream_id=stream_id,
             stream=stream_id,
@@ -39,11 +32,6 @@ def user_schema():
             key_properties=key_properties,
             metadata=stream_metadata,
             replication_key=None,
-            is_view=None,
-            database=None,
-            table=None,
-            row_count=None,
-            stream_alias=None,
             replication_method=None,
         )
     return catalog_entry
@@ -55,8 +43,9 @@ def discover():
 
 
 def user_data(access_token):
+    params = {"limit": 100, "page": 1}
     headers = {"Authorization": f"Bearer {access_token}"}
-    response = requests.get(f"{BASE_URL}/api/v1/users", headers=headers)
+    response = requests.get(f"{BASE_URL}/api/v1/users", params=params, headers=headers)
     response.raise_for_status()
     data = response.json()
     return data["result"]
@@ -72,7 +61,7 @@ def sync(config, state, catalog):
         is_sorted = True  # TODO: indicate whether data is sorted ascending on bookmark value
 
         singer.write_schema(
-            stream_name=stream.tap_stream_id, schema=stream.schema, key_properties=stream.key_properties,
+            stream_name=stream.tap_stream_id, schema=stream.schema.to_dict(), key_properties=stream.key_properties,
         )
 
         max_bookmark = None
