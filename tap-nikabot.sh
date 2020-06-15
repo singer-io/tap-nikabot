@@ -29,4 +29,4 @@ if [[ -n $proxy ]] ; then
     export REQUESTS_CA_BUNDLE="C:\Users\paul.heasley\Documents\owasp_zap_root_ca.cer"
 fi
 
-tap-nikabot "$@"
+tap-nikabot -c config.json "$@"

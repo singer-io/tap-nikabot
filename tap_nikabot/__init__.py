@@ -22,14 +22,16 @@ def user_schema():
     response = requests.get(f"{BASE_URL}/v2/api-docs?group=public")
     response.raise_for_status()
     swagger = response.json()
+    raw_schema = swagger["definitions"]["UserDTO"]
 
     stream_id = "users"
-    stream_metadata = []
     key_properties = ["id"]
-    schema = Schema.from_dict({
-        "type": "array",
-        "items": swagger["definitions"]["UserDTO"]
-    })
+    stream_metadata = metadata.get_standard_metadata(
+        raw_schema,
+        stream_id,
+        key_properties,
+    )
+    schema = Schema.from_dict(raw_schema)
     catalog_entry = CatalogEntry(
             tap_stream_id=stream_id,
             stream=stream_id,
@@ -52,8 +54,12 @@ def discover():
     return Catalog(streams)
 
 
-def user_data():
-   pass
+def user_data(access_token):
+    headers = {"Authorization": f"Bearer {access_token}"}
+    response = requests.get(f"{BASE_URL}/api/v1/users", headers=headers)
+    response.raise_for_status()
+    data = response.json()
+    return data["result"]
 
 
 def sync(config, state, catalog):
@@ -69,13 +75,8 @@ def sync(config, state, catalog):
             stream_name=stream.tap_stream_id, schema=stream.schema, key_properties=stream.key_properties,
         )
 
-        # TODO: delete and replace this inline function with your own data retrieval process:
-        tap_data = lambda: [{"id": x, "name": "row${x}"} for x in range(1000)]
-
         max_bookmark = None
-        for row in tap_data():
-            # TODO: place type conversions or transformations here
-
+        for row in user_data(config["access_token"]):
             # write one or more rows to the stream:
             singer.write_records(stream.tap_stream_id, [row])
             if bookmark_column:
