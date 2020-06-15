@@ -1,25 +1,27 @@
 #!/usr/bin/env python3
+from functools import partial
 import singer
 from singer import utils
 from singer.catalog import Catalog
 from .streams import user
-from .client import Client
+from . import client
 
 
 LOGGER = singer.get_logger()
+BASE_URL = "https://api.nikabot.com"
 DEFAULT_CONFIG = {"page_size": 1000}
 REQUIRED_CONFIG_KEYS = ["access_token"]
 
 
 def discover():
-    swagger = Client.fetch_swagger_definition()
+    swagger = client.fetch_swagger_definition(BASE_URL)
     schemas = [user.get_schema(swagger)]
     return Catalog(schemas)
 
 
 def sync(config, state, catalog):
     """ Sync data from tap source """
-    client = Client(config["access_token"], config["page_size"])
+    session = client.make_session(config["access_token"])
     # Loop over selected streams in catalog
     for stream in catalog.get_selected_streams(state):
         LOGGER.info("Syncing stream: %s", stream.tap_stream_id)
@@ -32,7 +34,8 @@ def sync(config, state, catalog):
         )
 
         max_bookmark = ""
-        for rows in user.get_records(client):
+        fetch_users = partial(client.fetch_users, BASE_URL, session, config["page_size"])
+        for rows in user.get_records(fetch_users):
             # write one or more rows to the stream:
             singer.write_records(stream.tap_stream_id, rows)
             if bookmark_column:

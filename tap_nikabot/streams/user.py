@@ -2,7 +2,7 @@ from singer import metadata
 from singer.catalog import CatalogEntry
 from singer.schema import Schema
 
-BASE_URL = "https://api.nikabot.com"
+
 MAX_API_PAGES = 10000
 
 
@@ -28,9 +28,9 @@ def get_schema(swagger):
     return catalog_entry
 
 
-def get_records(client):
+def get_records(fetch_users):
     for page in range(MAX_API_PAGES):
-        result = client.fetch_users(page)
+        result = fetch_users(page)
         if len(result["result"]) == 0:
             break
         yield result["result"]
