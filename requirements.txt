@@ -1,2 +1,7 @@
+# Prod dependencies
+singer-python ~= 5.9.0
+requests ~= 2.23.0
+
+# Dev dependencies
 black~=19.10b0
 pylint~=2.5
