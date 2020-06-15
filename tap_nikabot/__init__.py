@@ -7,6 +7,7 @@ from singer.schema import Schema
 
 
 BASE_URL = "https://api.nikabot.com"
+MAX_API_PAGES = 10000
 REQUIRED_CONFIG_KEYS = ["start_date", "access_token"]
 LOGGER = singer.get_logger()
 
@@ -43,12 +44,16 @@ def discover():
 
 
 def user_data(access_token):
-    params = {"limit": 100, "page": 1}
-    headers = {"Authorization": f"Bearer {access_token}"}
-    response = requests.get(f"{BASE_URL}/api/v1/users", params=params, headers=headers)
-    response.raise_for_status()
-    data = response.json()
-    return data["result"]
+    for page in range(MAX_API_PAGES):
+        params = {"limit": 1000, "page": page}
+        headers = {"Authorization": f"Bearer {access_token}"}
+        response = requests.get(f"{BASE_URL}/api/v1/users", params=params, headers=headers)
+        response.raise_for_status()
+        data = response.json()
+        if len(data["result"]) == 0:
+            break
+        for item in data["result"]:
+            yield item
 
 
 def sync(config, state, catalog):
