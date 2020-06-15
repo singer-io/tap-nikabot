@@ -17,44 +17,43 @@ def get_abs_path(path):
     return os.path.join(os.path.dirname(os.path.realpath(__file__)), path)
 
 
-def load_schemas():
-    """ Load schemas from schemas folder """
+def user_schema():
+    """ Load user stream schema from swagger definition """
     response = requests.get(f"{BASE_URL}/v2/api-docs?group=public")
     response.raise_for_status()
     swagger = response.json()
-    schemas = {
-        "users": Schema.from_dict({
-            "type": "array",
-            "items": swagger["definitions"]["UserDTO"]
-        })
-    }
-    return schemas
+
+    stream_id = "users"
+    stream_metadata = []
+    key_properties = ["id"]
+    schema = Schema.from_dict({
+        "type": "array",
+        "items": swagger["definitions"]["UserDTO"]
+    })
+    catalog_entry = CatalogEntry(
+            tap_stream_id=stream_id,
+            stream=stream_id,
+            schema=schema,
+            key_properties=key_properties,
+            metadata=stream_metadata,
+            replication_key=None,
+            is_view=None,
+            database=None,
+            table=None,
+            row_count=None,
+            stream_alias=None,
+            replication_method=None,
+        )
+    return catalog_entry
 
 
 def discover():
-    raw_schemas = load_schemas()
-    streams = []
-    for stream_id, schema in raw_schemas.items():
-        # TODO: populate any metadata and stream's key properties here..
-        stream_metadata = []
-        key_properties = []
-        streams.append(
-            CatalogEntry(
-                tap_stream_id=stream_id,
-                stream=stream_id,
-                schema=schema,
-                key_properties=key_properties,
-                metadata=stream_metadata,
-                replication_key=None,
-                is_view=None,
-                database=None,
-                table=None,
-                row_count=None,
-                stream_alias=None,
-                replication_method=None,
-            )
-        )
+    streams = [user_schema()]
     return Catalog(streams)
+
+
+def user_data():
+   pass
 
 
 def sync(config, state, catalog):
