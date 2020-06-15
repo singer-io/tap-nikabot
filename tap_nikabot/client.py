@@ -1,21 +1,24 @@
 import requests
 
 
-def make_session(access_token):
-    session = requests.Session()
-    session.headers.update({"Authorization": f"Bearer {access_token}"})
-    return session
+BASE_URL = "https://api.nikabot.com"
 
 
-def fetch_users(base_url, session, page_size, page):
-    params = {"limit": page_size, "page": page}
-    response = session.get(f"{base_url}/api/v1/users", params=params)
-    response.raise_for_status()
-    return response.json()
+class Client:
+    def __init__(self, access_token, page_size):
+        self.session = requests.Session()
+        self.session.headers.update({"Authorization": f"Bearer {access_token}"})
+        self.page_size = page_size
 
+    def fetch_users(self, page):
+        params = {"limit": self.page_size, "page": page}
+        response = self.session.get(f"{BASE_URL}/api/v1/users", params=params)
+        response.raise_for_status()
+        return response.json()
 
-def fetch_swagger_definition(base_url):
-    response = requests.get(f"{base_url}/v2/api-docs?group=public")
-    response.raise_for_status()
-    swagger = response.json()
-    return swagger
+    @staticmethod
+    def fetch_swagger_definition():
+        response = requests.get(f"{BASE_URL}/v2/api-docs?group=public")
+        response.raise_for_status()
+        swagger = response.json()
+        return swagger

@@ -2,7 +2,6 @@ from singer import metadata
 from singer.catalog import CatalogEntry
 from singer.schema import Schema
 
-
 MAX_API_PAGES = 10000
 
 
@@ -28,9 +27,9 @@ def get_schema(swagger):
     return catalog_entry
 
 
-def get_records(fetch_users):
+def get_records(client):
     for page in range(MAX_API_PAGES):
-        result = fetch_users(page)
+        result = client.fetch_users(page)
         if len(result["result"]) == 0:
             break
         yield result["result"]
