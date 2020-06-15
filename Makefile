@@ -30,3 +30,4 @@ db:
 	docker run -e POSTGRES_PASSWORD=stitches -p 5432:5432 --rm postgres
 
 .PHONY: init lint db
+.SILENT:

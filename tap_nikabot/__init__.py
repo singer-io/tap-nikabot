@@ -3,25 +3,26 @@ import singer
 from singer import utils
 from singer.catalog import Catalog
 from .streams import user
+from .client import Client
 
 
 LOGGER = singer.get_logger()
-DEFAULT_CONFIG = {
-    "page_size": 1000
-}
+DEFAULT_CONFIG = {"page_size": 1000}
 REQUIRED_CONFIG_KEYS = ["access_token"]
 
 
 def discover():
-    schemas = [user.get_schema()]
+    swagger = Client.fetch_swagger_definition()
+    schemas = [user.get_schema(swagger)]
     return Catalog(schemas)
 
 
 def sync(config, state, catalog):
     """ Sync data from tap source """
+    client = Client(config["access_token"], config["page_size"])
     # Loop over selected streams in catalog
     for stream in catalog.get_selected_streams(state):
-        LOGGER.info("Syncing stream:" + stream.tap_stream_id)
+        LOGGER.info("Syncing stream: %s", stream.tap_stream_id)
 
         bookmark_column = stream.replication_key
         is_sorted = False
@@ -31,7 +32,7 @@ def sync(config, state, catalog):
         )
 
         max_bookmark = ""
-        for rows in user.get_records(config["access_token"], config["page_size"]):
+        for rows in user.get_records(client):
             # write one or more rows to the stream:
             singer.write_records(stream.tap_stream_id, rows)
             if bookmark_column:
@@ -43,7 +44,6 @@ def sync(config, state, catalog):
                     max_bookmark = max(max_bookmark, max([row[bookmark_column] for row in rows]))
         if bookmark_column and not is_sorted:
             singer.write_state({stream.tap_stream_id: max_bookmark})
-    return
 
 
 @utils.handle_top_exception(LOGGER)
