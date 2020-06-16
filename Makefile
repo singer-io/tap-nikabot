@@ -21,6 +21,16 @@ init:
 		pip install -q -r requirements.txt; \
 		pip install -e .
 
+discover:
+	source $(VENV_ACTIVATE); \
+	    if [ -f `pwd`/.env ]; then set -o allexport; source `pwd`/.env; set +o allexport; fi; \
+	    tap-nikabot -c config.json --discover
+
+sync:
+	source $(VENV_ACTIVATE); \
+	    if [ -f `pwd`/.env ]; then set -o allexport; source `pwd`/.env; set +o allexport; fi; \
+	    tap-nikabot -c config.json --catalog catalog.json
+
 lint:
 	source $(VENV_ACTIVATE); \
 		black -l 120 tap_nikabot tests *.py; \
@@ -34,5 +44,5 @@ test: lint
 db:
 	docker run -e POSTGRES_PASSWORD=stitches -p 5432:5432 --rm postgres
 
-.PHONY: init lint test db
+.PHONY: init discover sync lint test db
 .SILENT:
