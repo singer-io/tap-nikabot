@@ -20,30 +20,32 @@ def sync(config, state, catalog):
     """ Sync data from tap source """
     client = Client(config["access_token"], config["page_size"])
     # Loop over selected streams in catalog
-    for stream in catalog.get_selected_streams(state):
-        LOGGER.info("Syncing stream: %s", stream.tap_stream_id)
+    for selected_stream in catalog.get_selected_streams(state):
+        LOGGER.info("Syncing stream: %s", selected_stream.tap_stream_id)
 
-        bookmark_column = stream.replication_key
+        bookmark_column = selected_stream.replication_key
         is_sorted = False
 
         singer.write_schema(
-            stream_name=stream.tap_stream_id, schema=stream.schema.to_dict(), key_properties=stream.key_properties,
+            stream_name=selected_stream.tap_stream_id,
+            schema=selected_stream.schema.to_dict(),
+            key_properties=selected_stream.key_properties,
         )
 
         max_bookmark = ""
-        stream_processor = next(s for s in all_streams if s.STREAM_ID == stream.tap_stream_id)
-        for rows in stream_processor.get_records(client):
+        stream = next(s for s in all_streams if s.STREAM_ID == selected_stream.tap_stream_id)
+        for rows in stream.get_records(client):
             # write one or more rows to the stream:
-            singer.write_records(stream.tap_stream_id, rows)
+            singer.write_records(selected_stream.tap_stream_id, rows)
             if bookmark_column:
                 if is_sorted:
                     # update bookmark to latest value
-                    singer.write_state({stream.tap_stream_id: rows[-1][bookmark_column]})
+                    singer.write_state({selected_stream.tap_stream_id: rows[-1][bookmark_column]})
                 else:
                     # if data unsorted, save max value until end of writes
                     max_bookmark = max(max_bookmark, max([row[bookmark_column] for row in rows]))
         if bookmark_column and not is_sorted:
-            singer.write_state({stream.tap_stream_id: max_bookmark})
+            singer.write_state({selected_stream.tap_stream_id: max_bookmark})
 
 
 @utils.handle_top_exception(LOGGER)

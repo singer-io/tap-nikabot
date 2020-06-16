@@ -23,8 +23,8 @@ init:
 
 lint:
 	source $(VENV_ACTIVATE); \
-		black -l 120 tap_nikabot *.py; \
-		pylint --exit-zero tap_nikabot *.py
+		black -l 120 tap_nikabot tests *.py; \
+		pylint --exit-zero tap_nikabot tests *.py
 
 test: lint
 	source $(VENV_ACTIVATE); \

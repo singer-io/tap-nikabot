@@ -12,10 +12,9 @@
 disable=missing-docstring,
         too-few-public-methods,
         no-self-use,
-        multiple-imports,
         duplicate-code,
-        import-error,
-        too-many-arguments
+        too-many-arguments,
+        line-too-long               # We're using black to auto format so no need
 
 
 [BASIC]
@@ -34,12 +33,3 @@ good-names=f,
 # and msvs (visual studio). You can also give a reporter class, e.g.
 # mypackage.mymodule.MyReporterClass.
 output-format=colorized
-
-
-[FORMAT]
-
-# Regexp for a line that is allowed to be longer than the limit.
-ignore-long-lines=^\s*(# )?<?https?://\S+>?$
-
-# Maximum number of characters on a single line.
-max-line-length=120
