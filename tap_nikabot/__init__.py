@@ -2,9 +2,8 @@
 import singer
 from singer import utils
 from singer.catalog import Catalog
-from .streams import users
+from .streams import all_streams
 from .client import Client
-
 
 LOGGER = singer.get_logger()
 DEFAULT_CONFIG = {"page_size": 1000}
@@ -13,7 +12,7 @@ REQUIRED_CONFIG_KEYS = ["access_token"]
 
 def discover():
     swagger = Client.fetch_swagger_definition()
-    schemas = [users.get_schema(swagger)]
+    schemas = [stream.get_schema(swagger) for stream in all_streams]
     return Catalog(schemas)
 
 
@@ -32,7 +31,8 @@ def sync(config, state, catalog):
         )
 
         max_bookmark = ""
-        for rows in users.get_records(client):
+        stream_processor = next(s for s in all_streams if s.STREAM_ID == stream.tap_stream_id)
+        for rows in stream_processor.get_records(client):
             # write one or more rows to the stream:
             singer.write_records(stream.tap_stream_id, rows)
             if bookmark_column:

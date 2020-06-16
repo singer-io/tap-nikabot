@@ -1,6 +1,5 @@
 import requests
 
-
 BASE_URL = "https://api.nikabot.com"
 
 
@@ -13,6 +12,12 @@ class Client:
     def fetch_users(self, page):
         params = {"limit": self.page_size, "page": page}
         response = self.session.get(f"{BASE_URL}/api/v1/users", params=params)
+        response.raise_for_status()
+        return response.json()
+
+    def fetch_roles(self, page):
+        params = {"limit": self.page_size, "page": page}
+        response = self.session.get(f"{BASE_URL}/api/v1/roles", params=params)
         response.raise_for_status()
         return response.json()
 
