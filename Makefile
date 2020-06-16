@@ -23,12 +23,10 @@ init:
 
 discover:
 	source $(VENV_ACTIVATE); \
-	    if [ -f `pwd`/.env ]; then set -o allexport; source `pwd`/.env; set +o allexport; fi; \
 	    tap-nikabot -c config.json --discover
 
 sync:
 	source $(VENV_ACTIVATE); \
-	    if [ -f `pwd`/.env ]; then set -o allexport; source `pwd`/.env; set +o allexport; fi; \
 	    tap-nikabot -c config.json --catalog catalog.json
 
 lint:
