@@ -1,33 +1,16 @@
-from typing import Iterator, Dict, Any, Union, List
-from singer import metadata
-from singer.catalog import CatalogEntry
+from typing import Dict, Any, List, Optional
 from singer.schema import Schema
-
-from .stream import Stream, MAX_API_PAGES
+from .stream import Stream
 from ..client import Client
 
 
 class Groups(Stream):
-    stream_id: Union[str, None] = "groups"
+    stream_id: str = "groups"
+    key_properties: List[str] = ["id"]
+    replication_key: Optional[str] = None
 
-    def get_schema(self, swagger: Dict[str, Any]) -> CatalogEntry:
-        key_properties = ["id"]
-        schema = Schema.from_dict(swagger["definitions"]["Group"])
-        stream_metadata = metadata.get_standard_metadata(schema.to_dict(), self.stream_id, key_properties,)
-        # Default to selected
-        stream_metadata = metadata.to_list(metadata.write(metadata.to_map(stream_metadata), (), "selected", True))
-        catalog_entry = CatalogEntry(
-            tap_stream_id=self.stream_id,
-            stream=self.stream_id,
-            schema=schema,
-            key_properties=key_properties,
-            metadata=stream_metadata,
-        )
-        return catalog_entry
+    def _map_to_schema(self, swagger: Dict[str, Any]) -> Schema:
+        return Schema.from_dict(swagger["definitions"]["Group"])
 
-    def get_records(self, client: Client) -> Iterator[List[Dict[str, Any]]]:
-        for page in range(MAX_API_PAGES):
-            result = client.fetch_groups(page)
-            if len(result["result"]) == 0:
-                break
-            yield result["result"]
+    def _fetch_records(self, client: Client, page: int) -> Any:
+        return client.fetch_groups(page)
