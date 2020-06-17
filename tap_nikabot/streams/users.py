@@ -11,7 +11,6 @@ class Users(Stream):
     stream_id: Union[str, None] = "users"
 
     def get_schema(self, swagger: Dict[str, Any]) -> CatalogEntry:
-        """ Load schema from swagger definition """
         key_properties = ["id"]
         schema = Schema.from_dict(swagger["definitions"]["UserDTO"])
         stream_metadata = metadata.get_standard_metadata(

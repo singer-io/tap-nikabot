@@ -11,14 +11,17 @@ class Client:
         self.page_size = page_size
 
     def fetch_users(self, page: int) -> Any:
-        params = {"limit": self.page_size, "page": page}
-        response = self.session.get(f"{BASE_URL}/api/v1/users", params=params)
-        response.raise_for_status()
-        return response.json()
+        return self._fetch(page, f"{BASE_URL}/api/v1/users")
 
     def fetch_roles(self, page: int) -> Any:
+        return self._fetch(page, f"{BASE_URL}/api/v1/roles")
+
+    def fetch_groups(self, page: int) -> Any:
+        return self._fetch(page, f"{BASE_URL}/api/v1/groups")
+
+    def _fetch(self, page: int, url: str) -> Any:
         params = {"limit": self.page_size, "page": page}
-        response = self.session.get(f"{BASE_URL}/api/v1/roles", params=params)
+        response = self.session.get(url, params=params)
         response.raise_for_status()
         return response.json()
 

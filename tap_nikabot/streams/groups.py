@@ -7,12 +7,12 @@ from .stream import Stream, MAX_API_PAGES
 from ..client import Client
 
 
-class Roles(Stream):
-    stream_id: Union[str, None] = "roles"
+class Groups(Stream):
+    stream_id: Union[str, None] = "groups"
 
     def get_schema(self, swagger: Dict[str, Any]) -> CatalogEntry:
         key_properties = ["id"]
-        schema = Schema.from_dict(swagger["definitions"]["RoleDTO"])
+        schema = Schema.from_dict(swagger["definitions"]["Group"])
         stream_metadata = metadata.get_standard_metadata(schema.to_dict(), self.stream_id, key_properties,)
         # Default to selected
         stream_metadata = metadata.to_list(metadata.write(metadata.to_map(stream_metadata), (), "selected", True))
@@ -27,7 +27,7 @@ class Roles(Stream):
 
     def get_records(self, client: Client) -> Iterator[List[Dict[str, Any]]]:
         for page in range(MAX_API_PAGES):
-            result = client.fetch_roles(page)
+            result = client.fetch_groups(page)
             if len(result["result"]) == 0:
                 break
             yield result["result"]
