@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+from typing import Dict
 import singer
 from singer import utils
 from singer.catalog import Catalog
@@ -10,13 +11,13 @@ DEFAULT_CONFIG = {"page_size": 1000}
 REQUIRED_CONFIG_KEYS = ["access_token"]
 
 
-def discover():
+def discover() -> Catalog:
     swagger = Client.fetch_swagger_definition()
-    schemas = [stream.get_schema(swagger) for stream in all_streams]
+    schemas = [stream().get_schema(swagger) for stream in all_streams]
     return Catalog(schemas)
 
 
-def sync(config, state, catalog):
+def sync(config: Dict[str, str], state: Dict[str, str], catalog: Catalog) -> None:
     """ Sync data from tap source """
     client = Client(config["access_token"], config["page_size"])
     # Loop over selected streams in catalog
@@ -33,8 +34,8 @@ def sync(config, state, catalog):
         )
 
         max_bookmark = ""
-        stream = next(s for s in all_streams if s.STREAM_ID == selected_stream.tap_stream_id)
-        for rows in stream.get_records(client):
+        stream = next(s for s in all_streams if s.stream_id == selected_stream.tap_stream_id)
+        for rows in stream().get_records(client):
             # write one or more rows to the stream:
             singer.write_records(selected_stream.tap_stream_id, rows)
             if bookmark_column:
@@ -49,7 +50,7 @@ def sync(config, state, catalog):
 
 
 @utils.handle_top_exception(LOGGER)
-def main():
+def main() -> None:
     # Parse command line arguments
     args = utils.parse_args(REQUIRED_CONFIG_KEYS)
     config = dict(DEFAULT_CONFIG, **args.config)

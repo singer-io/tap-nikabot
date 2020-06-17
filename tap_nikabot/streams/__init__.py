@@ -1,4 +1,7 @@
-from . import users
-from . import roles
+from typing import List, Type
 
-all_streams = [users, roles]
+from .stream import Stream
+from .users import Users
+from .roles import Roles
+
+all_streams: List[Type[Stream]] = [Users, Roles]

@@ -32,12 +32,13 @@ sync:
 lint:
 	source $(VENV_ACTIVATE); \
 		black -l 120 tap_nikabot tests *.py; \
-		pylint --exit-zero tap_nikabot tests *.py
+		pylint --exit-zero tap_nikabot tests *.py; \
+		mypy --strict tap_nikabot
 
 test: lint
 	source $(VENV_ACTIVATE); \
-        coverage run --source=tap_nikabot -m pytest; \
-		coverage report --skip-covered
+        coverage run -m pytest; \
+		coverage report
 
 db:
 	docker run -e POSTGRES_PASSWORD=stitches -p 5432:5432 --rm postgres
