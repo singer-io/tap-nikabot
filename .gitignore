@@ -100,7 +100,6 @@ ENV/
 env.sh
 config.json
 .autoenv.zsh
-catalog.json
 
 rsa-key
 tags
