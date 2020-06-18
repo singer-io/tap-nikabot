@@ -8,20 +8,9 @@ from ..typing import JsonResult
 
 
 class Stream(ABC):
-    @property
-    @abstractmethod
-    def stream_id(self) -> str:
-        raise NotImplementedError
-
-    @property
-    @abstractmethod
-    def key_properties(self) -> List[str]:
-        raise NotImplementedError
-
-    @property
-    @abstractmethod
-    def replication_key(self) -> Optional[str]:
-        raise NotImplementedError
+    stream_id: str = ""
+    key_properties: List[str] = []
+    replication_key: Optional[str] = None
 
     def get_catalog_entry(self, swagger: JsonResult) -> CatalogEntry:
         schema = self._map_to_schema(swagger)

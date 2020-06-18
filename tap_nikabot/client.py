@@ -13,6 +13,11 @@ class Client:
         self.session.headers.update({"Authorization": f"Bearer {access_token}"})
         self.page_size = page_size
 
+    def fetch(self, url: str) -> Any:
+        response = self.session.get(BASE_URL + url)
+        response.raise_for_status()
+        return response.json()
+
     def fetch_paginated(self, page: int, url: str) -> Any:
         params = {"limit": self.page_size, "page": page}
         response = self.session.get(BASE_URL + url, params=params)
