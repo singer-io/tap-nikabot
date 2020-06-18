@@ -15,7 +15,7 @@ def setup(requests_mock):
 class TestDiscover:
     def test_should_return_all_catalog_entries(self):
         catalog = discover()
-        assert len(catalog.streams) == 4
+        assert len(catalog.streams) == 5
 
     def test_should_return_users_catalog(self):
         catalog = discover()
@@ -40,3 +40,9 @@ class TestDiscover:
         catalog_entry = next(e for e in catalog.streams if e.tap_stream_id == "teams")
         assert catalog_entry.stream == "teams"
         assert catalog_entry.schema.properties["platform_id"] is not None
+
+    def test_should_return_projects_catalog(self):
+        catalog = discover()
+        catalog_entry = next(e for e in catalog.streams if e.tap_stream_id == "projects")
+        assert catalog_entry.stream == "projects"
+        assert catalog_entry.schema.properties["project_name"] is not None
