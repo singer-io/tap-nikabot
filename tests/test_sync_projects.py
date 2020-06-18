@@ -7,7 +7,7 @@ from tap_nikabot import sync
 
 LOGGER = logging.getLogger()
 EMPTY_RESPONSE = '{"ok":true,"result":[]}'
-PROJECTS_RESPONSE = '{"ok":true,"result":[{"id":"d893ebf32d49c35c1d754774","team_id":"T034F9NPW","name":"0.5"},{"id":"cfabd9aa6f3e6381a716da58","team_id":"T034F9NPW","name":"0.1"}]}'
+PROJECTS_RESPONSE = '{"ok":true,"result":[{"id":"5d6ca95e62a07c00045126e7","project_name":"CAP - Analytics","team_id":"T034F9NPW","author":"U6K26HMGV","pto":{"status":false},"custom_ref":"","create_date":"2019-09-02T05:32:14.23","client":"","type":"Capability Custodian","created_at":"2019-09-02T05:32:14.23","assigned_groups":["Analytics"]},{"id":"5d6ca97c62a07c00045126e8","project_name":"CAP - Authentication","team_id":"T034F9NPW","author":"U6K26HMGV","pto":{"status":false},"custom_ref":"","create_date":"2019-09-02T05:32:44.172","client":"","type":"Capability Custodian","created_at":"2019-09-02T05:32:44.172","assigned_groups":["Authentication"]}]}'
 
 
 class TestSyncProjects:
@@ -34,10 +34,10 @@ class TestSyncProjects:
             [
                 call('{"type": "SCHEMA", "stream": "projects", "schema": {}, "key_properties": ["id"]}\n'),
                 call(
-                    '{"type": "RECORD", "stream": "projects", "record": {"id": "d893ebf32d49c35c1d754774", "team_id": "T034F9NPW", "name": "0.5"}}\n'
+                    '{"type": "RECORD", "stream": "projects", "record": {"id": "5d6ca95e62a07c00045126e7", "project_name": "CAP - Analytics", "team_id": "T034F9NPW", "author": "U6K26HMGV", "pto": {"status": false}, "custom_ref": "", "create_date": "2019-09-02T05:32:14.23", "client": "", "type": "Capability Custodian", "created_at": "2019-09-02T05:32:14.23", "assigned_groups": ["Analytics"]}}\n'
                 ),
                 call(
-                    '{"type": "RECORD", "stream": "projects", "record": {"id": "cfabd9aa6f3e6381a716da58", "team_id": "T034F9NPW", "name": "0.1"}}\n'
+                    '{"type": "RECORD", "stream": "projects", "record": {"id": "5d6ca97c62a07c00045126e8", "project_name": "CAP - Authentication", "team_id": "T034F9NPW", "author": "U6K26HMGV", "pto": {"status": false}, "custom_ref": "", "create_date": "2019-09-02T05:32:44.172", "client": "", "type": "Capability Custodian", "created_at": "2019-09-02T05:32:44.172", "assigned_groups": ["Authentication"]}}\n'
                 ),
             ]
         )
