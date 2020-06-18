@@ -1,4 +1,4 @@
-from typing import Any, Iterator, List, cast
+from typing import Any, Iterator, List, cast, Dict, Optional
 import requests
 
 from .errors import ServerError
@@ -18,14 +18,18 @@ class Client:
         response = self.session.get(BASE_URL + url)
         return self._get_result(response)
 
-    def fetch_paginated(self, page: int, url: str) -> List[JsonResult]:
+    def fetch_paginated(
+        self, page: int, url: str, additional_params: Optional[Dict[str, Any]] = None
+    ) -> List[JsonResult]:
         params = {"limit": self.page_size, "page": page}
+        if additional_params:
+            params.update(additional_params)
         response = self.session.get(BASE_URL + url, params=params)
         return self._get_result(response)
 
-    def fetch_all_pages(self, url: str) -> Iterator[List[JsonResult]]:
+    def fetch_all_pages(self, url: str, params: Optional[Dict[str, Any]] = None) -> Iterator[List[JsonResult]]:
         for page in range(MAX_API_PAGES):
-            result = self.fetch_paginated(page, url)
+            result = self.fetch_paginated(page, url, params)
             if len(result) == 0:
                 break
             yield result

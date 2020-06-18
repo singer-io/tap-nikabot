@@ -1,19 +1,29 @@
 import json
 import logging
-from unittest.mock import call
+from datetime import date
+from unittest.mock import call, patch
+
+import pytest
 from singer.catalog import Catalog, CatalogEntry
 from singer.schema import Schema
 from tap_nikabot import sync
 
 LOGGER = logging.getLogger()
 EMPTY_RESPONSE = '{"ok":true,"result":[]}'
-RECORDS_RESPONSE = '{"ok":true,"result":[{"created_at":"2020-06-18T02:59:28.965Z","date":"2020-06-18T02:59:28.965Z","edited": {"author":"string","date":"2020-06-18T02:59:28.965Z"},"hours": 0,"id":"string","info":"string","project_id":"string","project_name":"string","team_id":"string","user_id":"string"}]}'
+RECORDS_RESPONSE = '{"ok":true,"result":[{"id":"5ee2ca823e056d00141896a0","team_id":"T034F9NPW","user_id":"UBM1DQ9RB","project_name":"CAP - Data Lifecycle","project_id":"5d6ca9e462a07c00045126ed","hours":2.0,"date":"2020-06-10T00:00:00","created_at":"2020-06-12T00:21:22.779"},{"id":"5ee1d52e5cff9100146de745","team_id":"T034F9NPW","user_id":"U107SJ4N6","project_name":"DUX","project_id":"5d6df702956de30004dc0198","hours":7.5,"date":"2020-06-10T00:00:00","created_at":"2020-06-11T06:54:38.138"}]}'
+
+
+@pytest.fixture(autouse=True)
+def mock_date():
+    with patch("tap_nikabot.streams.records.date", wraps=date) as mock:
+        mock.today.return_value = date(2020, 1, 1)
+        yield
 
 
 class TestSyncRecords:
     def test_should_output_records(self, mock_stdout, requests_mock):
-        requests_mock.get("https://api.nikabot.com/api/v1/records?limit=1000&page=0", json=json.loads(RECORDS_RESPONSE))
-        requests_mock.get("https://api.nikabot.com/api/v1/records?limit=1000&page=1", json=json.loads(EMPTY_RESPONSE))
+        requests_mock.get("https://api.nikabot.com/api/v1/records?limit=1000&page=0&dateStart=00010101&dateEnd=20200101", json=json.loads(RECORDS_RESPONSE))
+        requests_mock.get("https://api.nikabot.com/api/v1/records?limit=1000&page=1&dateStart=00010101&dateEnd=20200101", json=json.loads(EMPTY_RESPONSE))
         config = {"access_token": "my-access-token", "page_size": 1000}
         state = {}
         catalog = Catalog(
@@ -24,6 +34,7 @@ class TestSyncRecords:
                     schema=Schema.from_dict({}),
                     key_properties=["id"],
                     metadata=[{"breadcrumb": [], "metadata": {"selected": True}}],
+                    replication_key="date",
                 )
             ]
         )
@@ -32,8 +43,12 @@ class TestSyncRecords:
             [
                 call('{"type": "SCHEMA", "stream": "records", "schema": {}, "key_properties": ["id"]}\n'),
                 call(
-                    '{"type": "RECORD", "stream": "records", "record": {"created_at": "2020-06-18T02:59:28.965Z", "date": "2020-06-18T02:59:28.965Z", "edited": {"author": "string", "date": "2020-06-18T02:59:28.965Z"}, "hours": 0, "id": "string", "info": "string", "project_id": "string", "project_name": "string", "team_id": "string", "user_id": "string"}}\n'
+                    '{"type": "RECORD", "stream": "records", "record": {"id": "5ee2ca823e056d00141896a0", "team_id": "T034F9NPW", "user_id": "UBM1DQ9RB", "project_name": "CAP - Data Lifecycle", "project_id": "5d6ca9e462a07c00045126ed", "hours": 2.0, "date": "2020-06-10T00:00:00", "created_at": "2020-06-12T00:21:22.779"}}\n'
                 ),
+                call(
+                    '{"type": "RECORD", "stream": "records", "record": {"id": "5ee1d52e5cff9100146de745", "team_id": "T034F9NPW", "user_id": "U107SJ4N6", "project_name": "DUX", "project_id": "5d6df702956de30004dc0198", "hours": 7.5, "date": "2020-06-10T00:00:00", "created_at": "2020-06-11T06:54:38.138"}}\n'
+                ),
+                call('{"type": "STATE", "value": {"records": "2020-06-10T00:00:00"}}\n'),
             ]
         )
         LOGGER.info.assert_called_once_with("Syncing stream: %s", "records")
