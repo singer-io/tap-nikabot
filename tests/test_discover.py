@@ -21,35 +21,35 @@ class TestDiscover:
         catalog = discover()
         catalog_entry = next(e for e in catalog.streams if e.tap_stream_id == "users")
         assert catalog_entry.stream == "users"
-        assert catalog_entry.schema.properties["is_admin"] is not None
+        assert catalog_entry.schema.properties["is_admin"].type == "boolean"
 
     def test_should_return_roles_catalog(self):
         catalog = discover()
         catalog_entry = next(e for e in catalog.streams if e.tap_stream_id == "roles")
         assert catalog_entry.stream == "roles"
-        assert catalog_entry.schema.properties["team_id"] is not None
+        assert catalog_entry.schema.properties["team_id"].type == "string"
 
     def test_should_return_groups_catalog(self):
         catalog = discover()
         catalog_entry = next(e for e in catalog.streams if e.tap_stream_id == "groups")
         assert catalog_entry.stream == "groups"
-        assert catalog_entry.schema.properties["team_id"] is not None
+        assert catalog_entry.schema.properties["team_id"].type == "string"
 
     def test_should_return_teams_catalog(self):
         catalog = discover()
         catalog_entry = next(e for e in catalog.streams if e.tap_stream_id == "teams")
         assert catalog_entry.stream == "teams"
-        assert catalog_entry.schema.properties["platform_id"] is not None
+        assert catalog_entry.schema.properties["platform_id"].type == "string"
 
     def test_should_return_projects_catalog(self):
         catalog = discover()
         catalog_entry = next(e for e in catalog.streams if e.tap_stream_id == "projects")
         assert catalog_entry.stream == "projects"
-        assert catalog_entry.schema.properties["project_name"] is not None
+        assert catalog_entry.schema.properties["project_name"].type == "string"
 
     def test_should_return_records_catalog(self):
         catalog = discover()
         catalog_entry = next(e for e in catalog.streams if e.tap_stream_id == "records")
         assert catalog_entry.stream == "records"
         assert catalog_entry.schema.properties["hours"] is not None
-        assert catalog_entry.schema.properties["edited"].properties["date"] is not None
+        assert catalog_entry.schema.properties["edited"].properties["date"].type == "string"

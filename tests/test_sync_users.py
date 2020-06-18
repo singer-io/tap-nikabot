@@ -22,7 +22,6 @@ class TestSyncUsers:
                     schema=Schema.from_dict({}),
                     key_properties=["id"],
                     metadata=[],
-                    replication_key="updated_at",
                 )
             ]
         )
@@ -42,16 +41,12 @@ class TestSyncUsers:
                     schema=Schema.from_dict({}),
                     key_properties=["id"],
                     metadata=[{"breadcrumb": [], "metadata": {"selected": True}}],
-                    replication_key="updated_at",
                 )
             ]
         )
         sync(config, state, catalog)
         mock_stdout.assert_has_calls(
-            [
-                call('{"type": "SCHEMA", "stream": "users", "schema": {}, "key_properties": ["id"]}\n'),
-                call('{"type": "STATE", "value": {"users": ""}}\n'),
-            ]
+            [call('{"type": "SCHEMA", "stream": "users", "schema": {}, "key_properties": ["id"]}\n'),]
         )
         LOGGER.info.assert_called_once_with("Syncing stream: %s", "users")
 
@@ -68,7 +63,6 @@ class TestSyncUsers:
                     schema=Schema.from_dict({}),
                     key_properties=["id"],
                     metadata=[{"breadcrumb": [], "metadata": {"selected": True}}],
-                    replication_key="updated_at",
                 )
             ]
         )
@@ -82,7 +76,6 @@ class TestSyncUsers:
                 call(
                     '{"type": "RECORD", "stream": "users", "record": {"id": "68QMxnnt8YcpPdfmM", "name": "paul.heasley", "deleted": false, "presence": "active", "user_id": "U04AX35QP", "team_id": "T034F9NPW", "is_restricted": false, "is_ultra_restricted": false, "is_admin": false, "is_nikabot_admin": true, "tz": "Australia/Canberra", "tz_label": "Australian Eastern Standard Time", "tz_offset": 36000, "is_checkin_excluded": false, "create_date": "2019-09-02T05:13:47.88", "created_at": "2019-09-02T05:13:47.882", "role": "0.1", "groups": ["TA Stream", "TA Squad 1", "TA Squad 2", "TA Squad 3", "TA Squad 4", "Learning Applications", "Notification Capability"], "updated_at": "2020-06-15T06:07:58.272"}}\n'
                 ),
-                call('{"type": "STATE", "value": {"users": "2020-06-15T06:07:58.272"}}\n'),
             ]
         )
         LOGGER.info.assert_called_once_with("Syncing stream: %s", "users")
