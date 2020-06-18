@@ -1,7 +1,10 @@
-from typing import Dict, Any, List, Optional
+from typing import List, Optional, Iterator
+
 from singer.schema import Schema
+
 from .stream import Stream
 from ..client import Client
+from ..typing import JsonResult
 
 
 class Groups(Stream):
@@ -9,8 +12,8 @@ class Groups(Stream):
     key_properties: List[str] = ["id"]
     replication_key: Optional[str] = None
 
-    def _map_to_schema(self, swagger: Dict[str, Any]) -> Schema:
+    def _map_to_schema(self, swagger: JsonResult) -> Schema:
         return Schema.from_dict(swagger["definitions"]["Group"])
 
-    def _fetch_records(self, client: Client, page: int) -> Any:
-        return client.fetch_groups(page)
+    def get_records(self, client: Client) -> Iterator[List[JsonResult]]:
+        return client.fetch_all_pages("/api/v1/groups")

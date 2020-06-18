@@ -1,6 +1,9 @@
-from typing import Any
+from typing import Any, Iterator, List
 import requests
 
+from tap_nikabot.typing import JsonResult
+
+MAX_API_PAGES = 10000
 BASE_URL = "https://api.nikabot.com"
 
 
@@ -10,20 +13,18 @@ class Client:
         self.session.headers.update({"Authorization": f"Bearer {access_token}"})
         self.page_size = page_size
 
-    def fetch_users(self, page: int) -> Any:
-        return self._fetch(page, f"{BASE_URL}/api/v1/users")
-
-    def fetch_roles(self, page: int) -> Any:
-        return self._fetch(page, f"{BASE_URL}/api/v1/roles")
-
-    def fetch_groups(self, page: int) -> Any:
-        return self._fetch(page, f"{BASE_URL}/api/v1/groups")
-
-    def _fetch(self, page: int, url: str) -> Any:
+    def fetch_paginated(self, page: int, url: str) -> Any:
         params = {"limit": self.page_size, "page": page}
-        response = self.session.get(url, params=params)
+        response = self.session.get(BASE_URL + url, params=params)
         response.raise_for_status()
         return response.json()
+
+    def fetch_all_pages(self, url: str) -> Iterator[List[JsonResult]]:
+        for page in range(MAX_API_PAGES):
+            result = self.fetch_paginated(page, url)
+            if len(result["result"]) == 0:
+                break
+            yield result["result"]
 
     @staticmethod
     def fetch_swagger_definition() -> Any:

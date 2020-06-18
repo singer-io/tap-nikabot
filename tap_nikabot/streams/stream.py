@@ -1,9 +1,10 @@
 from abc import ABC, abstractmethod
-from typing import Dict, Any, Iterator, List, Optional
-from singer import CatalogEntry, Schema, metadata
-from ..client import Client
+from typing import Iterator, List, Optional
 
-MAX_API_PAGES = 10000
+from singer import CatalogEntry, Schema, metadata
+
+from ..client import Client
+from ..typing import JsonResult
 
 
 class Stream(ABC):
@@ -22,8 +23,8 @@ class Stream(ABC):
     def replication_key(self) -> Optional[str]:
         raise NotImplementedError
 
-    def get_schema(self, swagger: Dict[str, Any]) -> CatalogEntry:
-        schema = Schema.from_dict(swagger["definitions"]["UserDTO"])
+    def get_catalog_entry(self, swagger: JsonResult) -> CatalogEntry:
+        schema = self._map_to_schema(swagger)
         stream_metadata = metadata.get_standard_metadata(
             schema.to_dict(),
             self.stream_id,
@@ -42,17 +43,10 @@ class Stream(ABC):
         )
         return catalog_entry
 
-    def get_records(self, client: Client) -> Iterator[List[Dict[str, Any]]]:
-        for page in range(MAX_API_PAGES):
-            result = self._fetch_records(client, page)
-            if len(result["result"]) == 0:
-                break
-            yield result["result"]
-
     @abstractmethod
-    def _map_to_schema(self, swagger: Dict[str, Any]) -> Schema:
+    def get_records(self, client: Client) -> Iterator[List[JsonResult]]:
         raise NotImplementedError
 
     @abstractmethod
-    def _fetch_records(self, client: Client, page: int) -> Any:
+    def _map_to_schema(self, swagger: JsonResult) -> Schema:
         raise NotImplementedError

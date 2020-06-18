@@ -11,7 +11,7 @@ USERS_RESPONSE = '{"ok":true,"result":[{"id":"5de459977292020014fb601c","name":"
 
 
 class TestSyncUsers:
-    def test_sync_should_output_nothing_given_no_streams_selected(self, mock_stdout):
+    def test_should_output_nothing_given_no_streams_selected(self, mock_stdout):
         config = {"access_token": "my-access-token", "page_size": 1000}
         state = {}
         catalog = Catalog(
@@ -30,7 +30,7 @@ class TestSyncUsers:
         mock_stdout.assert_not_called()
         LOGGER.info.assert_called_once_with("Skipping stream: %s", "users")
 
-    def test_sync_users_should_output_no_records_given_no_records_available(self, mock_stdout, requests_mock):
+    def test_should_output_no_records_given_no_records_available(self, mock_stdout, requests_mock):
         requests_mock.get("https://api.nikabot.com/api/v1/users?limit=1000&page=0", json=json.loads(EMPTY_RESPONSE))
         config = {"access_token": "my-access-token", "page_size": 1000}
         state = {}
@@ -55,7 +55,7 @@ class TestSyncUsers:
         )
         LOGGER.info.assert_called_once_with("Syncing stream: %s", "users")
 
-    def test_sync_users_should_output_records(self, mock_stdout, requests_mock):
+    def test_should_output_records(self, mock_stdout, requests_mock):
         requests_mock.get("https://api.nikabot.com/api/v1/users?limit=1000&page=0", json=json.loads(USERS_RESPONSE))
         requests_mock.get("https://api.nikabot.com/api/v1/users?limit=1000&page=1", json=json.loads(EMPTY_RESPONSE))
         config = {"access_token": "my-access-token", "page_size": 1000}
