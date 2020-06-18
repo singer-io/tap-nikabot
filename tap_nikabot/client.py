@@ -1,7 +1,8 @@
 from typing import Any, Iterator, List
 import requests
 
-from tap_nikabot.typing import JsonResult
+from .errors import ServerError
+from .typing import JsonResult
 
 MAX_API_PAGES = 10000
 BASE_URL = "https://api.nikabot.com"
@@ -27,6 +28,8 @@ class Client:
     def fetch_all_pages(self, url: str) -> Iterator[List[JsonResult]]:
         for page in range(MAX_API_PAGES):
             result = self.fetch_paginated(page, url)
+            if not result.get("ok", False):
+                raise ServerError(result.get("message", None))
             if len(result["result"]) == 0:
                 break
             yield result["result"]
