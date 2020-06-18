@@ -1,4 +1,4 @@
-from typing import Any, Iterator, List
+from typing import Any, Iterator, List, cast
 import requests
 
 from .errors import ServerError
@@ -14,25 +14,28 @@ class Client:
         self.session.headers.update({"Authorization": f"Bearer {access_token}"})
         self.page_size = page_size
 
-    def fetch(self, url: str) -> Any:
+    def fetch(self, url: str) -> List[JsonResult]:
         response = self.session.get(BASE_URL + url)
-        response.raise_for_status()
-        return response.json()
+        return self._get_result(response)
 
-    def fetch_paginated(self, page: int, url: str) -> Any:
+    def fetch_paginated(self, page: int, url: str) -> List[JsonResult]:
         params = {"limit": self.page_size, "page": page}
         response = self.session.get(BASE_URL + url, params=params)
-        response.raise_for_status()
-        return response.json()
+        return self._get_result(response)
 
     def fetch_all_pages(self, url: str) -> Iterator[List[JsonResult]]:
         for page in range(MAX_API_PAGES):
             result = self.fetch_paginated(page, url)
-            if not result.get("ok", False):
-                raise ServerError(result.get("message", None))
-            if len(result["result"]) == 0:
+            if len(result) == 0:
                 break
-            yield result["result"]
+            yield result
+
+    def _get_result(self, response: requests.Response) -> List[JsonResult]:
+        response.raise_for_status()
+        result = response.json()
+        if not result.get("ok", False):
+            raise ServerError(result.get("message", None))
+        return cast(List[JsonResult], result["result"])
 
     @staticmethod
     def fetch_swagger_definition() -> Any:

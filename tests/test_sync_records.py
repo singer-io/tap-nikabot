@@ -34,7 +34,6 @@ class TestSyncRecords:
                 call(
                     '{"type": "RECORD", "stream": "records", "record": {"created_at": "2020-06-18T02:59:28.965Z", "date": "2020-06-18T02:59:28.965Z", "edited": {"author": "string", "date": "2020-06-18T02:59:28.965Z"}, "hours": 0, "id": "string", "info": "string", "project_id": "string", "project_name": "string", "team_id": "string", "user_id": "string"}}\n'
                 ),
-
-        ]
+            ]
         )
         LOGGER.info.assert_called_once_with("Syncing stream: %s", "records")
