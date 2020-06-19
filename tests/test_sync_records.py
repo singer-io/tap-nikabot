@@ -1,3 +1,4 @@
+# pylint: disable=redefined-outer-name
 import json
 import logging
 from datetime import date
@@ -30,7 +31,7 @@ def mock_catalog():
                 schema=Schema.from_dict({}),
                 key_properties=["id"],
                 metadata=[{"breadcrumb": [], "metadata": {"selected": True}}],
-                replication_key="date",
+                replication_key="created_at",
             )
         ]
     )
@@ -58,7 +59,7 @@ class TestSyncRecords:
                 call(
                     '{"type": "RECORD", "stream": "records", "record": {"id": "5ee1d52e5cff9100146de745", "team_id": "T034F9NPW", "user_id": "U107SJ4N6", "project_name": "DUX", "project_id": "5d6df702956de30004dc0198", "hours": 7.5, "date": "2020-06-10T00:00:00", "created_at": "2020-06-11T06:54:38.138"}}\n'
                 ),
-                call('{"type": "STATE", "value": {"records": "2020-06-10T00:00:00"}}\n'),
+                call('{"type": "STATE", "value": {"records": "2020-06-12T00:21:22.779"}}\n'),
             ]
         )
         LOGGER.info.assert_called_once_with("Syncing stream: %s", "records")
@@ -91,6 +92,6 @@ class TestSyncRecords:
                 call(
                     '{"type": "RECORD", "stream": "records", "record": {"id": "5ee1d52e5cff9100146de745", "team_id": "T034F9NPW", "user_id": "U107SJ4N6", "project_name": "DUX", "project_id": "5d6df702956de30004dc0198", "hours": 7.5, "date": "2020-06-10T00:00:00", "created_at": "2020-06-11T06:54:38.138"}}\n'
                 ),
-                call('{"type": "STATE", "value": {"records": "2020-06-10T00:00:00"}}\n'),
+                call('{"type": "STATE", "value": {"records": "2020-06-12T00:21:22.779"}}\n'),
             ]
         )

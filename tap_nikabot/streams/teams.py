@@ -15,5 +15,7 @@ class Teams(Stream):
     def _map_to_schema(self, swagger: JsonResult) -> Schema:
         return Schema.from_dict(swagger["definitions"]["TeamDTO"])
 
-    def get_records(self, client: Client, config: Dict[str, Any]) -> Iterator[List[JsonResult]]:
+    def get_records(
+        self, client: Client, config: Dict[str, Any], bookmark_column: str, latest_bookmark: Any
+    ) -> Iterator[List[JsonResult]]:
         yield client.fetch("/api/v1/teams")
