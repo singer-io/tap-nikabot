@@ -7,7 +7,7 @@ from . import streams
 from .client import Client
 
 LOGGER = singer.get_logger()
-DEFAULT_CONFIG = {"page_size": 1000}
+DEFAULT_CONFIG = {"page_size": 1000, "grace_period_days": 10}
 REQUIRED_CONFIG_KEYS = ["access_token"]
 
 
@@ -24,6 +24,7 @@ def sync(config: Dict[str, Any], state: Dict[str, Any], catalog: Catalog) -> Non
     for selected_stream in catalog.get_selected_streams(state):
         LOGGER.info("Syncing stream: %s", selected_stream.tap_stream_id)
 
+        current_bookmark = state.get(selected_stream.tap_stream_id, None)
         bookmark_column = selected_stream.replication_key
         is_sorted = False
 
@@ -33,9 +34,9 @@ def sync(config: Dict[str, Any], state: Dict[str, Any], catalog: Catalog) -> Non
             key_properties=selected_stream.key_properties,
         )
 
-        max_bookmark = ""
         stream = streams.get(selected_stream.tap_stream_id)
-        for rows in stream().get_records(client):
+        max_bookmark = ""
+        for rows in stream().get_records(client, config):
             # write one or more rows to the stream:
             singer.write_records(selected_stream.tap_stream_id, rows)
             if bookmark_column:

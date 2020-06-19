@@ -1,4 +1,7 @@
 {
   "access_token": "my_access_token",
-  "page_size": 1000
+  "page_size": 1000,
+  "start_date": "2010-01-01",
+  "end_date": "2020-01-01",
+  "grace_period_days": "10"
 }

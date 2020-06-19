@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import Iterator, List, Optional
+from typing import Iterator, List, Optional, Dict, Any
 
 from singer import CatalogEntry, Schema, metadata
 
@@ -33,7 +33,7 @@ class Stream(ABC):
         return catalog_entry
 
     @abstractmethod
-    def get_records(self, client: Client) -> Iterator[List[JsonResult]]:
+    def get_records(self, client: Client, config: Dict[str, Any]) -> Iterator[List[JsonResult]]:
         raise NotImplementedError
 
     @abstractmethod
