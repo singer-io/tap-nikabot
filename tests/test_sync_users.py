@@ -46,7 +46,7 @@ class TestSyncUsers:
         )
         sync(config, state, catalog)
         mock_stdout.assert_has_calls(
-            [call('{"type": "SCHEMA", "stream": "users", "schema": {}, "key_properties": ["id"]}\n'),]
+            [call('{"type": "SCHEMA", "stream": "users", "schema": {}, "key_properties": ["id"]}\n')]
         )
         LOGGER.info.assert_called_once_with("Syncing stream: %s", "users")
 
