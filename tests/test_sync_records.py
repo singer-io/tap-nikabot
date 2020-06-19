@@ -12,6 +12,7 @@ from tap_nikabot import sync
 LOGGER = logging.getLogger()
 EMPTY_RESPONSE = '{"ok":true,"result":[]}'
 RECORDS_RESPONSE = '{"ok":true,"result":[{"id":"5ee2ca823e056d00141896a0","team_id":"T034F9NPW","user_id":"UBM1DQ9RB","project_name":"CAP - Data Lifecycle","project_id":"5d6ca9e462a07c00045126ed","hours":2.0,"date":"2000-01-01T00:00:00","created_at":"2020-01-01T00:21:22.779"},{"id":"5ee1d52e5cff9100146de745","team_id":"T034F9NPW","user_id":"U107SJ4N6","project_name":"DUX","project_id":"5d6df702956de30004dc0198","hours":7.5,"date":"2020-06-10T00:00:00","created_at":"2020-06-11T06:54:38.138"}]}'
+RECORDS_PAGE2_RESPONSE = '{"ok":true,"result":[{"id": "5d9d7a035da6700004970476", "team_id": "T034F9NPW", "user_id": "UBM1DQ9RB", "project_name": "Leave (All Kinds)", "project_id": "5d6ca50762a07c00045125fc", "hours": 7.5, "date": "2019-08-20T00:00:00", "created_at": "2019-10-09T06:11:15.976"},{"id": "5d9d79c45da6700004970475", "team_id": "T034F9NPW", "user_id": "UBM1DQ9RB", "project_name": "TX - M1 Assign due dates", "project_id": "5d6e06c9956de30004dc01b0", "hours": 7.5, "date": "2019-08-21T00:00:00", "created_at": "2019-10-09T06:10:12.673"}]}'
 
 
 @pytest.fixture(autouse=True)
@@ -50,18 +51,16 @@ class TestSyncRecords:
         config = {"access_token": "my-access-token", "page_size": 1000}
         state = {}
         sync(config, state, mock_catalog)
-        mock_stdout.assert_has_calls(
-            [
-                call('{"type": "SCHEMA", "stream": "records", "schema": {}, "key_properties": ["id"]}\n'),
-                call(
-                    '{"type": "RECORD", "stream": "records", "record": {"id": "5ee2ca823e056d00141896a0", "team_id": "T034F9NPW", "user_id": "UBM1DQ9RB", "project_name": "CAP - Data Lifecycle", "project_id": "5d6ca9e462a07c00045126ed", "hours": 2.0, "date": "2000-01-01T00:00:00", "created_at": "2020-01-01T00:21:22.779"}}\n'
-                ),
-                call(
-                    '{"type": "RECORD", "stream": "records", "record": {"id": "5ee1d52e5cff9100146de745", "team_id": "T034F9NPW", "user_id": "U107SJ4N6", "project_name": "DUX", "project_id": "5d6df702956de30004dc0198", "hours": 7.5, "date": "2020-06-10T00:00:00", "created_at": "2020-06-11T06:54:38.138"}}\n'
-                ),
-                call('{"type": "STATE", "value": {"records": "2020-06-11T06:54:38.138"}}\n'),
-            ]
-        )
+        assert mock_stdout.mock_calls == [
+            call('{"type": "SCHEMA", "stream": "records", "schema": {}, "key_properties": ["id"]}\n'),
+            call(
+                '{"type": "RECORD", "stream": "records", "record": {"id": "5ee2ca823e056d00141896a0", "team_id": "T034F9NPW", "user_id": "UBM1DQ9RB", "project_name": "CAP - Data Lifecycle", "project_id": "5d6ca9e462a07c00045126ed", "hours": 2.0, "date": "2000-01-01T00:00:00", "created_at": "2020-01-01T00:21:22.779"}}\n'
+            ),
+            call(
+                '{"type": "RECORD", "stream": "records", "record": {"id": "5ee1d52e5cff9100146de745", "team_id": "T034F9NPW", "user_id": "U107SJ4N6", "project_name": "DUX", "project_id": "5d6df702956de30004dc0198", "hours": 7.5, "date": "2020-06-10T00:00:00", "created_at": "2020-06-11T06:54:38.138"}}\n'
+            ),
+            call('{"type": "STATE", "value": {"records": "2020-06-11T06:54:38.138"}}\n'),
+        ]
         LOGGER.info.assert_called_once_with("Syncing stream: %s", "records")
 
     def test_should_use_start_and_end_dates_given_config_set(self, mock_stdout, requests_mock, mock_catalog):
@@ -83,18 +82,16 @@ class TestSyncRecords:
         sync(config, state, mock_catalog)
         assert requests_page0.call_count == 1
         assert requests_page1.call_count == 1
-        mock_stdout.assert_has_calls(
-            [
-                call('{"type": "SCHEMA", "stream": "records", "schema": {}, "key_properties": ["id"]}\n'),
-                call(
-                    '{"type": "RECORD", "stream": "records", "record": {"id": "5ee2ca823e056d00141896a0", "team_id": "T034F9NPW", "user_id": "UBM1DQ9RB", "project_name": "CAP - Data Lifecycle", "project_id": "5d6ca9e462a07c00045126ed", "hours": 2.0, "date": "2000-01-01T00:00:00", "created_at": "2020-01-01T00:21:22.779"}}\n'
-                ),
-                call(
-                    '{"type": "RECORD", "stream": "records", "record": {"id": "5ee1d52e5cff9100146de745", "team_id": "T034F9NPW", "user_id": "U107SJ4N6", "project_name": "DUX", "project_id": "5d6df702956de30004dc0198", "hours": 7.5, "date": "2020-06-10T00:00:00", "created_at": "2020-06-11T06:54:38.138"}}\n'
-                ),
-                call('{"type": "STATE", "value": {"records": "2020-06-11T06:54:38.138"}}\n'),
-            ]
-        )
+        assert mock_stdout.mock_calls == [
+            call('{"type": "SCHEMA", "stream": "records", "schema": {}, "key_properties": ["id"]}\n'),
+            call(
+                '{"type": "RECORD", "stream": "records", "record": {"id": "5ee2ca823e056d00141896a0", "team_id": "T034F9NPW", "user_id": "UBM1DQ9RB", "project_name": "CAP - Data Lifecycle", "project_id": "5d6ca9e462a07c00045126ed", "hours": 2.0, "date": "2000-01-01T00:00:00", "created_at": "2020-01-01T00:21:22.779"}}\n'
+            ),
+            call(
+                '{"type": "RECORD", "stream": "records", "record": {"id": "5ee1d52e5cff9100146de745", "team_id": "T034F9NPW", "user_id": "U107SJ4N6", "project_name": "DUX", "project_id": "5d6df702956de30004dc0198", "hours": 7.5, "date": "2020-06-10T00:00:00", "created_at": "2020-06-11T06:54:38.138"}}\n'
+            ),
+            call('{"type": "STATE", "value": {"records": "2020-06-11T06:54:38.138"}}\n'),
+        ]
 
     def test_should_use_last_bookmark_given_incremental_replication(self, mock_stdout, requests_mock, mock_catalog):
         requests_mock.get(
@@ -114,15 +111,13 @@ class TestSyncRecords:
         }
         state = {"records": "2020-06-10T00:00:00.000"}
         sync(config, state, mock_catalog)
-        mock_stdout.assert_has_calls(
-            [
-                call('{"type": "SCHEMA", "stream": "records", "schema": {}, "key_properties": ["id"]}\n'),
-                call(
-                    '{"type": "RECORD", "stream": "records", "record": {"id": "5ee1d52e5cff9100146de745", "team_id": "T034F9NPW", "user_id": "U107SJ4N6", "project_name": "DUX", "project_id": "5d6df702956de30004dc0198", "hours": 7.5, "date": "2020-06-10T00:00:00", "created_at": "2020-06-11T06:54:38.138"}}\n'
-                ),
-                call('{"type": "STATE", "value": {"records": "2020-06-11T06:54:38.138"}}\n'),
-            ]
-        )
+        assert mock_stdout.mock_calls == [
+            call('{"type": "SCHEMA", "stream": "records", "schema": {}, "key_properties": ["id"]}\n'),
+            call(
+                '{"type": "RECORD", "stream": "records", "record": {"id": "5ee1d52e5cff9100146de745", "team_id": "T034F9NPW", "user_id": "U107SJ4N6", "project_name": "DUX", "project_id": "5d6df702956de30004dc0198", "hours": 7.5, "date": "2020-06-10T00:00:00", "created_at": "2020-06-11T06:54:38.138"}}\n'
+            ),
+            call('{"type": "STATE", "value": {"records": "2020-06-11T06:54:38.138"}}\n'),
+        ]
 
     def test_should_not_return_records_after_last_bookmark(self, mock_stdout, requests_mock, mock_catalog):
         requests_mock.get(
@@ -142,9 +137,41 @@ class TestSyncRecords:
         }
         state = {"records": "2020-06-15T00:00:00.000"}
         sync(config, state, mock_catalog)
-        mock_stdout.assert_has_calls(
-            [
-                call('{"type": "SCHEMA", "stream": "records", "schema": {}, "key_properties": ["id"]}\n'),
-                call('{"type": "STATE", "value": {"records": "2020-06-15T00:00:00.000"}}\n'),
-            ]
+        assert mock_stdout.mock_calls == [
+            call('{"type": "SCHEMA", "stream": "records", "schema": {}, "key_properties": ["id"]}\n'),
+            call('{"type": "STATE", "value": {"records": "2020-06-15T00:00:00.000"}}\n'),
+        ]
+
+    def test_should_output_multiple_pages(self, mock_stdout, requests_mock, mock_catalog):
+        requests_mock.get(
+            "https://api.nikabot.com/api/v1/records?limit=1000&page=0&dateStart=00010101&dateEnd=20200101",
+            json=json.loads(RECORDS_RESPONSE),
         )
+        requests_mock.get(
+            "https://api.nikabot.com/api/v1/records?limit=1000&page=1&dateStart=00010101&dateEnd=20200101",
+            json=json.loads(RECORDS_PAGE2_RESPONSE),
+        )
+        requests_mock.get(
+            "https://api.nikabot.com/api/v1/records?limit=1000&page=2&dateStart=00010101&dateEnd=20200101",
+            json=json.loads(EMPTY_RESPONSE),
+        )
+        config = {"access_token": "my-access-token", "page_size": 1000}
+        state = {}
+        sync(config, state, mock_catalog)
+        assert mock_stdout.mock_calls == [
+            call('{"type": "SCHEMA", "stream": "records", "schema": {}, "key_properties": ["id"]}\n'),
+            call(
+                '{"type": "RECORD", "stream": "records", "record": {"id": "5ee2ca823e056d00141896a0", "team_id": "T034F9NPW", "user_id": "UBM1DQ9RB", "project_name": "CAP - Data Lifecycle", "project_id": "5d6ca9e462a07c00045126ed", "hours": 2.0, "date": "2000-01-01T00:00:00", "created_at": "2020-01-01T00:21:22.779"}}\n'
+            ),
+            call(
+                '{"type": "RECORD", "stream": "records", "record": {"id": "5ee1d52e5cff9100146de745", "team_id": "T034F9NPW", "user_id": "U107SJ4N6", "project_name": "DUX", "project_id": "5d6df702956de30004dc0198", "hours": 7.5, "date": "2020-06-10T00:00:00", "created_at": "2020-06-11T06:54:38.138"}}\n'
+            ),
+            call(
+                '{"type": "RECORD", "stream": "records", "record": {"id": "5d9d7a035da6700004970476", "team_id": "T034F9NPW", "user_id": "UBM1DQ9RB", "project_name": "Leave (All Kinds)", "project_id": "5d6ca50762a07c00045125fc", "hours": 7.5, "date": "2019-08-20T00:00:00", "created_at": "2019-10-09T06:11:15.976"}}\n'
+            ),
+            call(
+                '{"type": "RECORD", "stream": "records", "record": {"id": "5d9d79c45da6700004970475", "team_id": "T034F9NPW", "user_id": "UBM1DQ9RB", "project_name": "TX - M1 Assign due dates", "project_id": "5d6e06c9956de30004dc01b0", "hours": 7.5, "date": "2019-08-21T00:00:00", "created_at": "2019-10-09T06:10:12.673"}}\n'
+            ),
+            call('{"type": "STATE", "value": {"records": "2020-06-11T06:54:38.138"}}\n'),
+        ]
+        LOGGER.info.assert_called_once_with("Syncing stream: %s", "records")

@@ -28,15 +28,13 @@ class TestSyncRoles:
             ]
         )
         sync(config, state, catalog)
-        mock_stdout.assert_has_calls(
-            [
-                call('{"type": "SCHEMA", "stream": "roles", "schema": {}, "key_properties": ["id"]}\n'),
-                call(
-                    '{"type": "RECORD", "stream": "roles", "record": {"id": "d893ebf32d49c35c1d754774", "team_id": "T034F9NPW", "name": "0.5"}}\n'
-                ),
-                call(
-                    '{"type": "RECORD", "stream": "roles", "record": {"id": "cfabd9aa6f3e6381a716da58", "team_id": "T034F9NPW", "name": "0.1"}}\n'
-                ),
-            ]
-        )
+        assert mock_stdout.mock_calls == [
+            call('{"type": "SCHEMA", "stream": "roles", "schema": {}, "key_properties": ["id"]}\n'),
+            call(
+                '{"type": "RECORD", "stream": "roles", "record": {"id": "d893ebf32d49c35c1d754774", "team_id": "T034F9NPW", "name": "0.5"}}\n'
+            ),
+            call(
+                '{"type": "RECORD", "stream": "roles", "record": {"id": "cfabd9aa6f3e6381a716da58", "team_id": "T034F9NPW", "name": "0.1"}}\n'
+            ),
+        ]
         LOGGER.info.assert_called_once_with("Syncing stream: %s", "roles")

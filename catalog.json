@@ -2,7 +2,6 @@
   "streams": [
     {
       "tap_stream_id": "users",
-      "replication_key": "updated_at",
       "key_properties": [
         "id"
       ],
@@ -93,9 +92,6 @@
           "metadata": {
             "table-key-properties": [
               "id"
-            ],
-            "valid-replication-keys": [
-              "updated_at"
             ],
             "inclusion": "available",
             "schema-name": "users",
@@ -726,6 +722,7 @@
     },
     {
       "tap_stream_id": "records",
+      "replication_key": "created_at",
       "key_properties": [
         "id"
       ],
@@ -783,6 +780,9 @@
           "metadata": {
             "table-key-properties": [
               "id"
+            ],
+            "valid-replication-keys": [
+              "created_at"
             ],
             "inclusion": "available",
             "schema-name": "records",
