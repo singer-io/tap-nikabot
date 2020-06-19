@@ -16,6 +16,6 @@ class Users(Stream):
         return Schema.from_dict(swagger["definitions"]["UserDTO"])
 
     def get_records(
-        self, client: Client, config: Dict[str, Any], bookmark_column: str, latest_bookmark: Any
+        self, client: Client, config: Dict[str, Any], bookmark_column: str, last_bookmark: Any
     ) -> Iterator[List[JsonResult]]:
         return client.fetch_all_pages("/api/v1/users")

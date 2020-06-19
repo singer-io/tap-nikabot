@@ -25,7 +25,7 @@ def sync(config: Dict[str, Any], state: Dict[str, Any], catalog: Catalog) -> Non
         LOGGER.info("Syncing stream: %s", selected_stream.tap_stream_id)
 
         bookmark_column = selected_stream.replication_key
-        latest_bookmark = state.get(selected_stream.tap_stream_id, None)
+        last_bookmark = state.get(selected_stream.tap_stream_id, None)
         is_sorted = False
 
         singer.write_schema(
@@ -35,8 +35,10 @@ def sync(config: Dict[str, Any], state: Dict[str, Any], catalog: Catalog) -> Non
         )
 
         stream = streams.get(selected_stream.tap_stream_id)
-        max_bookmark = ""
-        for rows in stream().get_records(client, config, bookmark_column, latest_bookmark):
+        max_bookmark = last_bookmark
+        for rows in stream().get_records(client, config, bookmark_column, last_bookmark):
+            if len(rows) == 0:
+                continue
             # write one or more rows to the stream:
             singer.write_records(selected_stream.tap_stream_id, rows)
             if bookmark_column:
@@ -44,8 +46,9 @@ def sync(config: Dict[str, Any], state: Dict[str, Any], catalog: Catalog) -> Non
                     # update bookmark to latest value
                     singer.write_state({selected_stream.tap_stream_id: rows[-1][bookmark_column]})
                 else:
+                    local_max_bookmark = max([row[bookmark_column] for row in rows])
                     # if data unsorted, save max value until end of writes
-                    max_bookmark = max(max_bookmark, max([row[bookmark_column] for row in rows]))
+                    max_bookmark = max(max_bookmark, local_max_bookmark) if max_bookmark else local_max_bookmark
         if bookmark_column and not is_sorted:
             singer.write_state({selected_stream.tap_stream_id: max_bookmark})
 

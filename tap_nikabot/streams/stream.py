@@ -34,7 +34,7 @@ class Stream(ABC):
 
     @abstractmethod
     def get_records(
-        self, client: Client, config: Dict[str, Any], bookmark_column: str, latest_bookmark: Any
+        self, client: Client, config: Dict[str, Any], bookmark_column: str, last_bookmark: Any
     ) -> Iterator[List[JsonResult]]:
         raise NotImplementedError
 

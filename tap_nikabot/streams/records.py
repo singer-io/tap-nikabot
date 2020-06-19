@@ -31,7 +31,7 @@ def get_new_records(
     last_created_at = datetime.fromisoformat(latest_bookmark)
     replay_from_datetime = last_created_at - timedelta(days=cutoff_days)
     # Don't use a start date earlier than config
-    start_date = min(start_date, replay_from_datetime.date())
+    start_date = max(start_date, replay_from_datetime.date())
 
     for page in fetch(start_date, end_date):
         yield [record for record in page if datetime.fromisoformat(record["created_at"]) > last_created_at]
@@ -54,7 +54,7 @@ class Records(Stream):
         return Schema.from_dict(schema)
 
     def get_records(
-        self, client: Client, config: Dict[str, Any], bookmark_column: str, latest_bookmark: Any
+        self, client: Client, config: Dict[str, Any], bookmark_column: str, last_bookmark: Any
     ) -> Iterator[List[JsonResult]]:
         if bookmark_column != self.replication_key:
             raise InvalidReplicationKey(bookmark_column, [self.replication_key] if self.replication_key else [])
@@ -65,6 +65,6 @@ class Records(Stream):
         end_date = date.fromisoformat(config["end_date"]) if "end_date" in config else date.today()
         fetch = partial(fetch_between_dates, client)
 
-        if latest_bookmark:
-            return get_new_records(start_date, end_date, latest_bookmark, config["cutoff_date"], fetch)
+        if last_bookmark:
+            return get_new_records(start_date, end_date, last_bookmark, config["cutoff_days"], fetch)
         return get_all_records(start_date, end_date, fetch)
