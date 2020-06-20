@@ -7,6 +7,7 @@ import pytest
 from singer.catalog import Catalog, CatalogEntry
 from singer.schema import Schema
 from tap_nikabot import sync
+from tap_nikabot.errors import StartDateAfterEndDateError
 
 LOGGER = logging.getLogger()
 EMPTY_RESPONSE = '{"ok":true,"result":[]}'
@@ -19,6 +20,7 @@ def mock_date():
     with patch("tap_nikabot.streams.records.date", wraps=date) as mock:
         # Don't wrap date.min in a Mock otherwise date comparisons don't work
         mock.min = date.min
+        mock.max = date.max
         mock.today.return_value = date(2020, 1, 1)
         yield
 
@@ -34,6 +36,7 @@ def mock_catalog():
                 key_properties=["id"],
                 metadata=[{"breadcrumb": [], "metadata": {"selected": True}}],
                 replication_key="date",
+                replication_method="INCREMENTAL",
             )
         ]
     )
@@ -42,14 +45,14 @@ def mock_catalog():
 class TestSyncRecords:
     def test_should_output_records_given_default_config(self, mock_stdout, requests_mock, mock_catalog):
         requests_mock.get(
-            "https://api.nikabot.com/api/v1/records?limit=1000&page=0&dateStart=00010101&dateEnd=20191221",
+            "https://api.nikabot.com/api/v1/records?limit=1000&page=0&dateStart=00010101&dateEnd=20191222",
             json=json.loads(RECORDS_RESPONSE),
         )
         requests_mock.get(
-            "https://api.nikabot.com/api/v1/records?limit=1000&page=1&dateStart=00010101&dateEnd=20191221",
+            "https://api.nikabot.com/api/v1/records?limit=1000&page=1&dateStart=00010101&dateEnd=20191222",
             json=json.loads(EMPTY_RESPONSE),
         )
-        config = {"access_token": "my-access-token", "page_size": 1000}
+        config = {"access_token": "my-access-token", "page_size": 1000, "cutoff_days": 10}
         state = {}
         sync(config, state, mock_catalog)
         assert mock_stdout.mock_calls == [
@@ -66,18 +69,18 @@ class TestSyncRecords:
 
     def test_should_output_multiple_pages(self, mock_stdout, requests_mock, mock_catalog):
         requests_mock.get(
-            "https://api.nikabot.com/api/v1/records?limit=1000&page=0&dateStart=00010101&dateEnd=20200101",
+            "https://api.nikabot.com/api/v1/records?limit=1000&page=0&dateStart=00010101&dateEnd=20191222",
             json=json.loads(RECORDS_RESPONSE),
         )
         requests_mock.get(
-            "https://api.nikabot.com/api/v1/records?limit=1000&page=1&dateStart=00010101&dateEnd=20200101",
+            "https://api.nikabot.com/api/v1/records?limit=1000&page=1&dateStart=00010101&dateEnd=20191222",
             json=json.loads(RECORDS_PAGE2_RESPONSE),
         )
         requests_mock.get(
-            "https://api.nikabot.com/api/v1/records?limit=1000&page=2&dateStart=00010101&dateEnd=20200101",
+            "https://api.nikabot.com/api/v1/records?limit=1000&page=2&dateStart=00010101&dateEnd=20191222",
             json=json.loads(EMPTY_RESPONSE),
         )
-        config = {"access_token": "my-access-token", "page_size": 1000}
+        config = {"access_token": "my-access-token", "page_size": 1000, "cutoff_days": 10}
         state = {}
         sync(config, state, mock_catalog)
         assert mock_stdout.mock_calls == [
@@ -101,18 +104,19 @@ class TestSyncRecords:
 
     def test_should_use_start_and_end_dates_given_config_set(self, mock_stdout, requests_mock, mock_catalog):
         requests_page0 = requests_mock.get(
-            "https://api.nikabot.com/api/v1/records?limit=1000&page=0&dateStart=20100101&dateEnd=20100501",
+            "https://api.nikabot.com/api/v1/records?limit=1000&page=0&dateStart=20200101&dateEnd=20200501",
             json=json.loads(RECORDS_RESPONSE),
         )
         requests_page1 = requests_mock.get(
-            "https://api.nikabot.com/api/v1/records?limit=1000&page=1&dateStart=20100101&dateEnd=20100501",
+            "https://api.nikabot.com/api/v1/records?limit=1000&page=1&dateStart=20200101&dateEnd=20200501",
             json=json.loads(EMPTY_RESPONSE),
         )
         config = {
             "access_token": "my-access-token",
             "page_size": 1000,
-            "start_date": "2010-01-01",
-            "end_date": "2010-05-01",
+            "cutoff_days": 10,
+            "start_date": "2020-01-01",
+            "end_date": "2020-05-01",
         }
         state = {}
         sync(config, state, mock_catalog)
@@ -141,9 +145,9 @@ class TestSyncRecords:
         config = {
             "access_token": "my-access-token",
             "page_size": 1000,
-            "start_date": "2010-01-01",
-            "end_date": "2020-06-10",
             "cutoff_days": 10,
+            "start_date": "2020-01-01",
+            "end_date": "2020-06-10",
         }
         state = {"records": "2020-06-09T00:00:00.000"}
         sync(config, state, mock_catalog)
@@ -156,44 +160,110 @@ class TestSyncRecords:
     def test_should_not_use_bookmark_given_full_replication(self):
         pass
 
-    @pytest.mark.skip()
-    def test_should_return_no_records_when_bookmark_greater_than_end_date(self, mock_stdout, requests_mock, mock_catalog):
-        requests_mock.get(
-            "https://api.nikabot.com/api/v1/records?limit=1000&page=0&dateStart=20200605&dateEnd=20100501",
-            json=json.loads(RECORDS_RESPONSE),
-        )
-        requests_mock.get(
-            "https://api.nikabot.com/api/v1/records?limit=1000&page=1&dateStart=20200605&dateEnd=20100501",
-            json=json.loads(EMPTY_RESPONSE),
-        )
+    def test_should_return_no_records_when_bookmark_greater_than_end_date(self, mock_stdout, mock_catalog):
         config = {
             "access_token": "my-access-token",
             "page_size": 1000,
-            "start_date": "2010-01-01",
-            "end_date": "2010-05-01",
             "cutoff_days": 10,
+            "start_date": "2020-01-01",
+            "end_date": "2020-06-10",
         }
         state = {"records": "2020-06-15T00:00:00.000"}
         sync(config, state, mock_catalog)
         assert mock_stdout.mock_calls == [
             call('{"type": "SCHEMA", "stream": "records", "schema": {}, "key_properties": ["id"]}\n'),
-            call('{"type": "STATE", "value": {"records": "2020-06-15T00:00:00.000"}}\n'),
         ]
 
-    def test_should_start_from_start_date_given_bookmark_less_than_start_date(self):
-        pass
+    def test_should_start_from_start_date_given_bookmark_less_than_start_date(self, requests_mock, mock_catalog):
+        requests_page0 = requests_mock.get(
+            "https://api.nikabot.com/api/v1/records?limit=1000&page=0&dateStart=20200101&dateEnd=20200610",
+            json=json.loads(RECORDS_RESPONSE),
+        )
+        requests_page1 = requests_mock.get(
+            "https://api.nikabot.com/api/v1/records?limit=1000&page=1&dateStart=20200101&dateEnd=20200610",
+            json=json.loads(EMPTY_RESPONSE),
+        )
+        config = {
+            "access_token": "my-access-token",
+            "page_size": 1000,
+            "cutoff_days": 10,
+            "start_date": "2020-01-01",
+            "end_date": "2020-06-10",
+        }
+        state = {"records": "2010-12-31T00:00:00.000"}
+        sync(config, state, mock_catalog)
+        assert requests_page0.call_count == 1
+        assert requests_page1.call_count == 1
 
-    def test_should_raise_error_when_start_date_greater_than_end_date(self, mock_stdout, requests_mock, mock_catalog):
-        pass
+    def test_should_raise_error_when_start_date_greater_than_end_date(self, mock_catalog):
+        config = {
+            "access_token": "my-access-token",
+            "page_size": 1000,
+            "cutoff_days": 10,
+            "start_date": "2020-06-11",
+            "end_date": "2020-06-10",
+        }
+        state = {}
+        with pytest.raises(StartDateAfterEndDateError):
+            sync(config, state, mock_catalog)
 
-    def test_should_sync_future_dates_given_cutoff_days_not_set(self):
-        pass
+    def test_should_sync_future_dates_given_cutoff_days_not_set(self, requests_mock, mock_catalog):
+        requests_page0 = requests_mock.get(
+            "https://api.nikabot.com/api/v1/records?limit=1000&page=0&dateStart=00010101&dateEnd=99991231",
+            json=json.loads(RECORDS_RESPONSE),
+        )
+        requests_page1 = requests_mock.get(
+            "https://api.nikabot.com/api/v1/records?limit=1000&page=1&dateStart=00010101&dateEnd=99991231",
+            json=json.loads(EMPTY_RESPONSE),
+        )
+        config = {"access_token": "my-access-token", "page_size": 1000, "cutoff_days": None}
+        state = {}
+        sync(config, state, mock_catalog)
+        assert requests_page0.call_count == 1
+        assert requests_page1.call_count == 1
 
-    def test_should_use_start_date_when_cutoff_date_less_than_start_date(self):
-        pass
+    def test_should_return_no_records_when_cutoff_date_less_than_start_date(self, mock_stdout, mock_catalog):
+        config = {
+            "access_token": "my-access-token",
+            "page_size": 1000,
+            "cutoff_days": 10,
+            "start_date": "2019-12-31",
+        }
+        state = {}
+        sync(config, state, mock_catalog)
+        assert mock_stdout.mock_calls == [
+            call('{"type": "SCHEMA", "stream": "records", "schema": {}, "key_properties": ["id"]}\n'),
+        ]
 
-    def test_should_use_end_date_when_cutoff_date_greater_than_end_date(self):
-        pass
+    def test_should_use_end_date_when_cutoff_date_greater_than_end_date(self, requests_mock, mock_catalog):
+        requests_page0 = requests_mock.get(
+            "https://api.nikabot.com/api/v1/records?limit=1000&page=0&dateStart=20191219&dateEnd=20191220",
+            json=json.loads(RECORDS_RESPONSE),
+        )
+        requests_page1 = requests_mock.get(
+            "https://api.nikabot.com/api/v1/records?limit=1000&page=1&dateStart=20191219&dateEnd=20191220",
+            json=json.loads(EMPTY_RESPONSE),
+        )
+        config = {
+            "access_token": "my-access-token",
+            "page_size": 1000,
+            "cutoff_days": 10,
+            "start_date": "2019-12-19",
+            "end_date": "2019-12-20",
+        }
+        state = {}
+        sync(config, state, mock_catalog)
+        assert requests_page0.call_count == 1
+        assert requests_page1.call_count == 1
 
-    def test_should_return_no_records_when_bookmark_greater_than_cutoff_date(self):
-        pass
+    def test_should_return_no_records_when_bookmark_greater_than_cutoff_date(self, mock_stdout, mock_catalog):
+        config = {
+            "access_token": "my-access-token",
+            "page_size": 1000,
+            "cutoff_days": 10,
+        }
+        state = {"records": "2020-01-01T00:00:00.000"}
+        sync(config, state, mock_catalog)
+        assert mock_stdout.mock_calls == [
+            call('{"type": "SCHEMA", "stream": "records", "schema": {}, "key_properties": ["id"]}\n'),
+        ]

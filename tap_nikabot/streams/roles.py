@@ -16,6 +16,6 @@ class Roles(Stream):
         return Schema.from_dict(swagger["definitions"]["RoleDTO"])
 
     def get_records(
-        self, client: Client, config: Dict[str, Any], bookmark_column: str, last_bookmark: Any
+        self, client: Client, config: Dict[str, Any], bookmark_column: str, last_bookmark: Any, replication_method: str
     ) -> Iterator[List[JsonResult]]:
         return client.fetch_all_pages("/api/v1/roles")

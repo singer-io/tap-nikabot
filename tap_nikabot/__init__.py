@@ -25,6 +25,7 @@ def sync(config: Dict[str, Any], state: Dict[str, Any], catalog: Catalog) -> Non
         LOGGER.info("Syncing stream: %s", selected_stream.tap_stream_id)
 
         bookmark_column = selected_stream.replication_key
+        replication_method = selected_stream.replication_method
         last_bookmark = state.get(selected_stream.tap_stream_id, None)
         # TODO: Add this to schema metadata
         is_sorted = True
@@ -36,8 +37,8 @@ def sync(config: Dict[str, Any], state: Dict[str, Any], catalog: Catalog) -> Non
         )
 
         stream = streams.get(selected_stream.tap_stream_id)
-        max_bookmark = last_bookmark
-        for rows in stream().get_records(client, config, bookmark_column, last_bookmark):
+        max_bookmark = last_bookmark if replication_method == "INCREMENTAL" else None
+        for rows in stream().get_records(client, config, bookmark_column, last_bookmark, replication_method):
             if len(rows) == 0:
                 continue
             # write one or more rows to the stream:
