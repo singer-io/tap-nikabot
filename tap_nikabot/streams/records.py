@@ -1,52 +1,19 @@
-from functools import partial
-from typing import List, Optional, Iterator, Any, Dict, Callable
-from datetime import date, datetime, timedelta
+from datetime import date, timedelta, datetime
+from typing import List, Optional, Iterator, Any, Dict
 
 from singer import resolve_schema_references
 from singer.schema import Schema
 
 from .stream import Stream
 from ..client import Client
-from ..errors import InvalidReplicationKey
+from ..errors import InvalidReplicationKeyError, StartDateAfterEndDateError
 from ..typing import JsonResult
-
-
-def fetch_between_dates(client: Client, start_date: date, end_date: date) -> Iterator[List[JsonResult]]:
-    params = {"dateStart": start_date.strftime("%Y%m%d"), "dateEnd": end_date.strftime("%Y%m%d")}
-    return client.fetch_all_pages("/api/v1/records", params=params)
-
-
-def get_new_records(
-    start_date: date,
-    end_date: date,
-    latest_bookmark: str,
-    cutoff_days: int,
-    fetch: Callable[[date, date], Iterator[List[JsonResult]]],
-) -> Iterator[List[JsonResult]]:
-    # "cutoff_days" is the number of days we give users to enter their timesheet. After this we won't check
-    # if they've entered it or not. We do this because the API only allows filtering by timesheet day, not
-    # created or modified dates.
-    # A "cutoff_days" of None or -1 will always fetch all records from the API, then filtering by
-    # created_at (replication key).
-    last_created_at = datetime.fromisoformat(latest_bookmark)
-    replay_from_datetime = last_created_at - timedelta(days=cutoff_days)
-    # Don't use a start date earlier than config
-    start_date = max(start_date, replay_from_datetime.date())
-
-    for page in fetch(start_date, end_date):
-        yield [record for record in page if datetime.fromisoformat(record["created_at"]) > last_created_at]
-
-
-def get_all_records(
-    start_date: date, end_date: date, fetch: Callable[[date, date], Iterator[List[JsonResult]]]
-) -> Iterator[List[JsonResult]]:
-    return fetch(start_date, end_date)
 
 
 class Records(Stream):
     stream_id: str = "records"
     key_properties: List[str] = ["id"]
-    replication_key: Optional[str] = "created_at"
+    replication_key: Optional[str] = "date"
 
     def _map_to_schema(self, swagger: JsonResult) -> Schema:
         schema_with_refs = {**swagger["definitions"]["RecordDTO"], **{"definitions": swagger["definitions"]}}
@@ -57,14 +24,35 @@ class Records(Stream):
         self, client: Client, config: Dict[str, Any], bookmark_column: str, last_bookmark: Any
     ) -> Iterator[List[JsonResult]]:
         if bookmark_column != self.replication_key:
-            raise InvalidReplicationKey(bookmark_column, [self.replication_key] if self.replication_key else [])
+            raise InvalidReplicationKeyError(bookmark_column, [self.replication_key] if self.replication_key else [])
 
-        # Try load end date from config or use today
-        start_date = date.fromisoformat(config["start_date"]) if "start_date" in config else date.min
-        # Try load end date from config or use today
-        end_date = date.fromisoformat(config["end_date"]) if "end_date" in config else date.today()
-        fetch = partial(fetch_between_dates, client)
-
+        if "start_date" in config:
+            start_date = date.fromisoformat(config["start_date"])
+        else:
+            start_date = date.min
         if last_bookmark:
-            return get_new_records(start_date, end_date, last_bookmark, config["cutoff_days"], fetch)
-        return get_all_records(start_date, end_date, fetch)
+            # Note the date field is actually an ISO datetime
+            last_date = datetime.fromisoformat(last_bookmark).date()
+            # We want to resume syncing from next date
+            next_date = last_date + timedelta(days=1)
+            # Don't use a start date earlier than config
+            start_date = max(start_date, next_date)
+
+        if "end_date" in config:
+            end_date = date.fromisoformat(config["end_date"])
+        elif "cutoff_days" in config:
+            # We only fetch up to "cutoff_days" to allows users time to enter their timesheet.
+            # New entries or modifications made after "cutoff_days" won't be picked up.
+            # We do this because the API only allows filtering by timesheet day, not created or modified dates.
+            end_date = date.today() - timedelta(days=config["cutoff_days"])
+            # Make sure our start date is before cutoff date
+            if end_date < start_date:
+                return iter([[]])
+        else:
+            end_date = date.today()
+
+        if end_date < start_date:
+            raise StartDateAfterEndDateError(start_date, end_date)
+
+        params = {"dateStart": start_date.strftime("%Y%m%d"), "dateEnd": end_date.strftime("%Y%m%d")}
+        return client.fetch_all_pages("/api/v1/records", params=params)

@@ -1,6 +1,6 @@
 # tap-nikabot
 
-This is a [Singer](https://singer.io) tap that produces JSON-formatted data following the [Singer spec](https://github.com/singer-io/getting-started/blob/master/SPEC.md) to retrieve [Nikabot](https://www.nikabot.com/) timesheeting data.
+This is a [Singer](https://singer.io) tap that produces JSON-formatted data following the [Singer spec](https://github.com/singer-io/getting-started/blob/master/SPEC.md) to retrieve [Nikabot](https://www.nikabot.com/) timesheeting data from the [Nikabot API](https://api.nikabot.com/swagger-ui.html#/).
 
 ## Quickstart
 
@@ -24,7 +24,48 @@ $ tap-nikabot -c config.json --catalog catalog.json
 
 See the [Singer documentation](https://github.com/singer-io/getting-started/blob/master/docs/RUNNING_AND_DEVELOPING.md) for full usage.
 
-## Development
+## Streams
+
+tap-nikabot supports the following streams:
+
+- users
+- roles
+- groups
+- teams
+- projects
+- records
+
+Where records are the timesheet entries for a user.
+
+## Config
+
+A sample config is provided in `config_sample.json`.
+
+| Property     | Default | Description                                                  |
+| ------------ | ------- | ------------------------------------------------------------ |
+| access_token | None    | **Required.** Nikabot API access token                       |
+| page_size    | 1000    | Allows configuring the number of records returned in each server request. |
+| start_date   | None    | The timesheet date to start pulling records from. If not provided will sync from the beginning of time. |
+| end_date     | None    | The timesheet date to start pulling records up to. If not provided will sync up to todays date, but see note about cutoff days. |
+| cutoff_days  | 10      | When using incremental replication, will only sync records up to this many days before todays date. |
+
+### A note on bookmarks
+
+Start date and end date take preferrence over bookmarks. If you have a bookmark that is earlier than the configured start date, syncing will start from start date. If you have a bookmark that is greater than end date, no records will be returned.
+
+### Cutoff days
+
+The Nikabot API only allows for filtering timesheet records by timesheet day, and only returns the created date not a modified date, his makes incremental replication a challenge. To support incremental replication, we've introduced a concept of cutoff days.
+
+When `replication-method: "INCREMENTAL"` is specified in the catalog for the records stream, the timesheet date is used as a bookmark / replication key and the tap will only sync records up to "cutoff_days" (defaults to 10 days) before today. Users have the cutoff days period to enter their timesheet information after which their entries will not be synced. 
+
+Note that because the timesheet date is a date only (not time), you will only be update to sync at most once per day.
+
+Cutoff days cannot be combined with an end date in config. If an end date is provided, cutoff days will be ignored and records will be synced right up to end date.
+
+#### Example
+
+## ![cutoff_days_example](/Users/paul/Projects/tap-nikabot/cutoff_days_example.png)Development
 
 A Makefile is provided to manage a virtual environment.
 
@@ -92,4 +133,6 @@ $ ./env.sh tap-nikabot -c config.json --catalog catalog.json
 ## Todo
 
 - [ ] Run [singer-check-tap](https://github.com/singer-io/singer-tools#singer-check-tap) tool to validate
-
+- [ ] Add replication mode
+- [ ] Add `time_extracted` field to RECORD message (https://github.com/singer-io/getting-started/blob/master/docs/SPEC.md#record-message)
+- [ ] Add `bookmark_properties` field to SCHEMA message

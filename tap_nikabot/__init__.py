@@ -26,7 +26,8 @@ def sync(config: Dict[str, Any], state: Dict[str, Any], catalog: Catalog) -> Non
 
         bookmark_column = selected_stream.replication_key
         last_bookmark = state.get(selected_stream.tap_stream_id, None)
-        is_sorted = False
+        # TODO: Add this to schema metadata
+        is_sorted = True
 
         singer.write_schema(
             stream_name=selected_stream.tap_stream_id,
