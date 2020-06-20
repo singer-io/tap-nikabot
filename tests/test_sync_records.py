@@ -157,8 +157,39 @@ class TestSyncRecords:
             [call('{"type": "STATE", "value": {"records": "2020-06-10T00:00:00"}}\n'),]
         )
 
-    def test_should_not_use_bookmark_given_full_replication(self):
-        pass
+    def test_should_not_use_bookmark_given_full_replication(self, requests_mock):
+        requests_page0 = requests_mock.get(
+            "https://api.nikabot.com/api/v1/records?limit=1000&page=0&dateStart=20200101&dateEnd=20200610",
+            json=json.loads(RECORDS_RESPONSE),
+        )
+        requests_page1 = requests_mock.get(
+            "https://api.nikabot.com/api/v1/records?limit=1000&page=1&dateStart=20200101&dateEnd=20200610",
+            json=json.loads(EMPTY_RESPONSE),
+        )
+        config = {
+            "access_token": "my-access-token",
+            "page_size": 1000,
+            "cutoff_days": 10,
+            "start_date": "2020-01-01",
+            "end_date": "2020-06-10",
+        }
+        state = {"records": "2020-06-09T00:00:00.000"}
+        catalog = Catalog(
+            streams=[
+                CatalogEntry(
+                    tap_stream_id="records",
+                    stream="records",
+                    schema=Schema.from_dict({}),
+                    key_properties=["id"],
+                    metadata=[{"breadcrumb": [], "metadata": {"selected": True}}],
+                    replication_key="date",
+                    replication_method="FULL_TABLE",
+                )
+            ]
+        )
+        sync(config, state, catalog)
+        assert requests_page0.call_count == 1
+        assert requests_page1.call_count == 1
 
     def test_should_return_no_records_when_bookmark_greater_than_end_date(self, mock_stdout, mock_catalog):
         config = {
