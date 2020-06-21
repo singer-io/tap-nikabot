@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 from typing import Dict, Any
 import singer
-from singer import utils, metadata
+from singer import utils
 from singer.catalog import Catalog
 from . import streams
 from .client import Client
@@ -27,8 +27,6 @@ def sync(config: Dict[str, Any], state: Dict[str, Any], catalog: Catalog) -> Non
         bookmark_column = selected_stream.replication_key
         replication_method = selected_stream.replication_method
         last_bookmark = state.get(selected_stream.tap_stream_id)
-        mdata = metadata.to_map(selected_stream.metadata)
-        is_sorted = metadata.get(mdata, (), "replication_key_is_sorted")
 
         singer.write_schema(
             stream_name=selected_stream.tap_stream_id,
@@ -44,14 +42,14 @@ def sync(config: Dict[str, Any], state: Dict[str, Any], catalog: Catalog) -> Non
             # write one or more rows to the stream:
             singer.write_records(selected_stream.tap_stream_id, rows)
             if bookmark_column:
-                if is_sorted:
+                if stream.replication_key_is_sorted:
                     # update bookmark to latest value
                     singer.write_state({selected_stream.tap_stream_id: rows[-1][bookmark_column]})
                 else:
                     local_max_bookmark = max([row[bookmark_column] for row in rows])
                     # if data unsorted, save max value until end of writes
                     max_bookmark = max(max_bookmark, local_max_bookmark) if max_bookmark else local_max_bookmark
-        if bookmark_column and not is_sorted:
+        if bookmark_column and not stream.replication_key_is_sorted:
             singer.write_state({selected_stream.tap_stream_id: max_bookmark})
 
 

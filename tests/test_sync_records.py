@@ -34,7 +34,7 @@ def mock_catalog():
                 stream="records",
                 schema=Schema.from_dict({}),
                 key_properties=["id"],
-                metadata=[{"breadcrumb": [], "metadata": {"selected": True, "replication_key_is_sorted": True}}],
+                metadata=[{"breadcrumb": [], "metadata": {"selected": True}}],
                 replication_key="date",
                 replication_method="INCREMENTAL",
             )
