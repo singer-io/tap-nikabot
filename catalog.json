@@ -722,7 +722,8 @@
     },
     {
       "tap_stream_id": "records",
-      "replication_key": "created_at",
+      "replication_key": "date",
+      "replication_method": "INCREMENTAL",
       "key_properties": [
         "id"
       ],
@@ -782,7 +783,7 @@
               "id"
             ],
             "valid-replication-keys": [
-              "created_at"
+              "date"
             ],
             "inclusion": "available",
             "schema-name": "records",

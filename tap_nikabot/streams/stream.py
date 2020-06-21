@@ -9,8 +9,9 @@ from ..typing import JsonResult
 
 class Stream(ABC):
     stream_id: str = ""
-    key_properties: List[str] = []
+    key_properties: List[str] = ["id"]
     replication_key: Optional[str] = None
+    replication_method: Optional[str] = None
 
     def get_catalog_entry(self, swagger: JsonResult) -> CatalogEntry:
         schema = self._map_to_schema(swagger)
@@ -29,6 +30,7 @@ class Stream(ABC):
             key_properties=self.key_properties,
             metadata=stream_metadata,
             replication_key=self.replication_key,
+            replication_method=self.replication_method,
         )
         return catalog_entry
 

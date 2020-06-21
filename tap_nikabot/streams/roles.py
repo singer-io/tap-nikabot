@@ -9,8 +9,6 @@ from ..typing import JsonResult
 
 class Roles(Stream):
     stream_id: str = "roles"
-    key_properties: List[str] = ["id"]
-    replication_key: Optional[str] = None
 
     def _map_to_schema(self, swagger: JsonResult) -> Schema:
         return Schema.from_dict(swagger["definitions"]["RoleDTO"])

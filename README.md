@@ -133,6 +133,7 @@ $ ./env.sh tap-nikabot -c config.json --catalog catalog.json
 ## Todo
 
 - [ ] Run [singer-check-tap](https://github.com/singer-io/singer-tools#singer-check-tap) tool to validate
-- [ ] Add replication mode
 - [ ] Add `time_extracted` field to RECORD message (https://github.com/singer-io/getting-started/blob/master/docs/SPEC.md#record-message)
 - [ ] Add `bookmark_properties` field to SCHEMA message
+- [ ] Replication method enum
+- [ ] Add sorting to schema metadata

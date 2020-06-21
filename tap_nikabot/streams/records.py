@@ -12,8 +12,8 @@ from ..typing import JsonResult
 
 class Records(Stream):
     stream_id: str = "records"
-    key_properties: List[str] = ["id"]
     replication_key: Optional[str] = "date"
+    replication_method: Optional[str] = "INCREMENTAL"
 
     def _map_to_schema(self, swagger: JsonResult) -> Schema:
         schema_with_refs = {**swagger["definitions"]["RecordDTO"], **{"definitions": swagger["definitions"]}}
