@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 from typing import Dict, Any
 import singer
-from singer import utils
+from singer import utils, metadata
 from singer.catalog import Catalog
 from . import streams
 from .client import Client
@@ -26,9 +26,9 @@ def sync(config: Dict[str, Any], state: Dict[str, Any], catalog: Catalog) -> Non
 
         bookmark_column = selected_stream.replication_key
         replication_method = selected_stream.replication_method
-        last_bookmark = state.get(selected_stream.tap_stream_id, None)
-        # TODO: Add this to schema metadata
-        is_sorted = True
+        last_bookmark = state.get(selected_stream.tap_stream_id)
+        mdata = metadata.to_map(selected_stream.metadata)
+        is_sorted = metadata.get(mdata, (), "replication_key_is_sorted")
 
         singer.write_schema(
             stream_name=selected_stream.tap_stream_id,

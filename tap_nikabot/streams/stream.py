@@ -12,23 +12,26 @@ class Stream(ABC):
     key_properties: List[str] = ["id"]
     replication_key: Optional[str] = None
     replication_method: Optional[str] = None
+    replication_key_is_sorted: bool = False
 
     def get_catalog_entry(self, swagger: JsonResult) -> CatalogEntry:
         schema = self._map_to_schema(swagger)
-        stream_metadata = metadata.get_standard_metadata(
+        standard_metadata = metadata.get_standard_metadata(
             schema.to_dict(),
             self.stream_id,
             self.key_properties,
             valid_replication_keys=[self.replication_key] if self.replication_key else None,
         )
+        mdata = metadata.to_map(standard_metadata)
+        metadata.write(mdata, (), "selected", True)
+        metadata.write(mdata, (), "replication_key_is_sorted", self.replication_key_is_sorted)
         # Default to selected
-        stream_metadata = metadata.to_list(metadata.write(metadata.to_map(stream_metadata), (), "selected", True))
         catalog_entry = CatalogEntry(
             tap_stream_id=self.stream_id,
             stream=self.stream_id,
             schema=schema,
             key_properties=self.key_properties,
-            metadata=stream_metadata,
+            metadata=metadata.to_list(mdata),
             replication_key=self.replication_key,
             replication_method=self.replication_method,
         )

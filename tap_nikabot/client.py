@@ -38,7 +38,7 @@ class Client:
         response.raise_for_status()
         result = response.json()
         if not result.get("ok", False):
-            raise ServerError(result.get("message", None))
+            raise ServerError(result.get("message"))
         return cast(List[JsonResult], result["result"])
 
     @staticmethod
