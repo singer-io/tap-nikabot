@@ -57,7 +57,7 @@ class TestSyncRecords:
         state = {}
         sync(config, state, mock_catalog)
         assert mock_stdout.mock_calls == [
-            call('{"type": "SCHEMA", "stream": "records", "schema": {}, "key_properties": ["id"]}\n'),
+            call('{"type": "SCHEMA", "stream": "records", "schema": {}, "key_properties": ["id"], "bookmark_properties": ["date"]}\n'),
             call(
                 '{"type": "RECORD", "stream": "records", "record": {"id": "5ee2ca823e056d00141896a0", "team_id": "T034F9NPW", "user_id": "UBM1DQ9RB", "project_name": "CAP - Data Lifecycle", "project_id": "5d6ca9e462a07c00045126ed", "hours": 2.0, "date": "2000-01-01T00:00:00", "created_at": "2020-01-01T00:21:22.779"}, "time_extracted": "2020-01-01T00:00:00.000000Z"}\n'
             ),
@@ -85,7 +85,7 @@ class TestSyncRecords:
         state = {}
         sync(config, state, mock_catalog)
         assert mock_stdout.mock_calls == [
-            call('{"type": "SCHEMA", "stream": "records", "schema": {}, "key_properties": ["id"]}\n'),
+            call('{"type": "SCHEMA", "stream": "records", "schema": {}, "key_properties": ["id"], "bookmark_properties": ["date"]}\n'),
             call(
                 '{"type": "RECORD", "stream": "records", "record": {"id": "5ee2ca823e056d00141896a0", "team_id": "T034F9NPW", "user_id": "UBM1DQ9RB", "project_name": "CAP - Data Lifecycle", "project_id": "5d6ca9e462a07c00045126ed", "hours": 2.0, "date": "2000-01-01T00:00:00", "created_at": "2020-01-01T00:21:22.779"}, "time_extracted": "2020-01-01T00:00:00.000000Z"}\n'
             ),
@@ -124,7 +124,7 @@ class TestSyncRecords:
         assert requests_page0.call_count == 1
         assert requests_page1.call_count == 1
         assert mock_stdout.mock_calls == [
-            call('{"type": "SCHEMA", "stream": "records", "schema": {}, "key_properties": ["id"]}\n'),
+            call('{"type": "SCHEMA", "stream": "records", "schema": {}, "key_properties": ["id"], "bookmark_properties": ["date"]}\n'),
             call(
                 '{"type": "RECORD", "stream": "records", "record": {"id": "5ee2ca823e056d00141896a0", "team_id": "T034F9NPW", "user_id": "UBM1DQ9RB", "project_name": "CAP - Data Lifecycle", "project_id": "5d6ca9e462a07c00045126ed", "hours": 2.0, "date": "2000-01-01T00:00:00", "created_at": "2020-01-01T00:21:22.779"}, "time_extracted": "2020-01-01T00:00:00.000000Z"}\n'
             ),
@@ -169,7 +169,7 @@ class TestSyncRecords:
         state = {"records": "2020-06-15T00:00:00.000"}
         sync(config, state, mock_catalog)
         assert mock_stdout.mock_calls == [
-            call('{"type": "SCHEMA", "stream": "records", "schema": {}, "key_properties": ["id"]}\n'),
+            call('{"type": "SCHEMA", "stream": "records", "schema": {}, "key_properties": ["id"], "bookmark_properties": ["date"]}\n'),
         ]
 
     def test_should_start_from_start_date_given_bookmark_less_than_start_date(self, requests_mock, mock_catalog):
@@ -230,7 +230,7 @@ class TestSyncRecords:
         state = {}
         sync(config, state, mock_catalog)
         assert mock_stdout.mock_calls == [
-            call('{"type": "SCHEMA", "stream": "records", "schema": {}, "key_properties": ["id"]}\n'),
+            call('{"type": "SCHEMA", "stream": "records", "schema": {}, "key_properties": ["id"], "bookmark_properties": ["date"]}\n'),
         ]
 
     def test_should_use_end_date_when_cutoff_date_greater_than_end_date(self, requests_mock, mock_catalog):
@@ -263,7 +263,7 @@ class TestSyncRecords:
         state = {"records": "2020-01-01T00:00:00.000"}
         sync(config, state, mock_catalog)
         assert mock_stdout.mock_calls == [
-            call('{"type": "SCHEMA", "stream": "records", "schema": {}, "key_properties": ["id"]}\n'),
+            call('{"type": "SCHEMA", "stream": "records", "schema": {}, "key_properties": ["id"], "bookmark_properties": ["date"]}\n'),
         ]
 
     def test_should_not_use_cutoff_days_when_full_replication(self, mock_stdout, requests_mock, mock_catalog):

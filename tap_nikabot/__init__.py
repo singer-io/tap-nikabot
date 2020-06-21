@@ -33,6 +33,7 @@ def sync(config: Dict[str, Any], state: Dict[str, Any], catalog: Catalog) -> Non
             stream_name=selected_stream.tap_stream_id,
             schema=selected_stream.schema.to_dict(),
             key_properties=selected_stream.key_properties,
+            bookmark_properties=[bookmark_column] if bookmark_column else None,
         )
 
         stream = streams.get(selected_stream.tap_stream_id)
