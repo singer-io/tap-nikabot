@@ -3,6 +3,7 @@ from typing import Iterator, List, Optional, Dict, Any
 
 from singer import CatalogEntry, Schema, metadata
 
+from ..replication_method import ReplicationMethod
 from ..client import Client
 from ..typing import JsonResult
 
@@ -11,7 +12,7 @@ class Stream(ABC):
     stream_id: str = ""
     key_properties: List[str] = ["id"]
     replication_key: Optional[str] = None
-    replication_method: Optional[str] = None
+    replication_method: Optional[ReplicationMethod] = None
     replication_key_is_sorted: bool = False
 
     def get_catalog_entry(self, swagger: JsonResult) -> CatalogEntry:
@@ -37,7 +38,12 @@ class Stream(ABC):
 
     @abstractmethod
     def get_records(
-        self, client: Client, config: Dict[str, Any], bookmark_column: str, last_bookmark: Any, replication_method: str
+        self,
+        client: Client,
+        config: Dict[str, Any],
+        bookmark_column: str,
+        last_bookmark: Any,
+        replication_method: Optional[ReplicationMethod],
     ) -> Iterator[List[JsonResult]]:
         raise NotImplementedError
 

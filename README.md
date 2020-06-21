@@ -133,4 +133,3 @@ $ ./env.sh tap-nikabot -c config.json --catalog catalog.json
 ## Todo
 
 - [ ] Run [singer-check-tap](https://github.com/singer-io/singer-tools#singer-check-tap) tool to validate
-- [ ] Replication method enum

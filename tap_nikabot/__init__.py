@@ -4,6 +4,8 @@ from typing import Dict, Any
 import singer
 from singer import utils
 from singer.catalog import Catalog
+
+from .replication_method import ReplicationMethod
 from . import streams
 from .client import Client
 
@@ -26,7 +28,9 @@ def sync(config: Dict[str, Any], state: Dict[str, Any], catalog: Catalog) -> Non
         LOGGER.info("Syncing stream: %s", selected_stream.tap_stream_id)
 
         bookmark_column = selected_stream.replication_key
-        replication_method = selected_stream.replication_method
+        replication_method = (
+            ReplicationMethod[selected_stream.replication_method] if selected_stream.replication_method else None
+        )
         last_bookmark = state.get(selected_stream.tap_stream_id)
 
         singer.write_schema(
@@ -37,7 +41,7 @@ def sync(config: Dict[str, Any], state: Dict[str, Any], catalog: Catalog) -> Non
         )
 
         stream = streams.get(selected_stream.tap_stream_id)
-        max_bookmark = last_bookmark if replication_method == "INCREMENTAL" else None
+        max_bookmark = last_bookmark if replication_method == ReplicationMethod.INCREMENTAL else None
         for records in stream().get_records(client, config, bookmark_column, last_bookmark, replication_method):
             if len(records) == 0:
                 continue

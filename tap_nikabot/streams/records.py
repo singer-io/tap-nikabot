@@ -4,6 +4,7 @@ from typing import List, Optional, Iterator, Any, Dict
 from singer import resolve_schema_references
 from singer.schema import Schema
 
+from ..replication_method import ReplicationMethod
 from .stream import Stream
 from ..client import Client
 from ..errors import InvalidReplicationKeyError, StartDateAfterEndDateError
@@ -13,7 +14,7 @@ from ..typing import JsonResult
 class Records(Stream):
     stream_id: str = "records"
     replication_key: Optional[str] = "date"
-    replication_method: Optional[str] = "INCREMENTAL"
+    replication_method: Optional[ReplicationMethod] = ReplicationMethod.INCREMENTAL
     replication_key_is_sorted: bool = True
 
     def _map_to_schema(self, swagger: JsonResult) -> Schema:
@@ -22,7 +23,12 @@ class Records(Stream):
         return Schema.from_dict(schema)
 
     def get_records(
-        self, client: Client, config: Dict[str, Any], bookmark_column: str, last_bookmark: Any, replication_method: str
+        self,
+        client: Client,
+        config: Dict[str, Any],
+        bookmark_column: str,
+        last_bookmark: Any,
+        replication_method: Optional[ReplicationMethod],
     ) -> Iterator[List[JsonResult]]:
         if bookmark_column != self.replication_key:
             raise InvalidReplicationKeyError(bookmark_column, [self.replication_key] if self.replication_key else [])
@@ -37,7 +43,7 @@ class Records(Stream):
             if end_date < start_date:
                 raise StartDateAfterEndDateError(start_date, end_date)
 
-        if replication_method == "INCREMENTAL":
+        if replication_method == ReplicationMethod.INCREMENTAL:
             if config["cutoff_days"] and "end_date" not in config:
                 # We only fetch up to "cutoff_days" to allows users time to enter their timesheet.
                 # New entries or modifications made after "cutoff_days" won't be picked up.
