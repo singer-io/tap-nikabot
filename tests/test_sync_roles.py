@@ -31,10 +31,10 @@ class TestSyncRoles:
         assert mock_stdout.mock_calls == [
             call('{"type": "SCHEMA", "stream": "roles", "schema": {}, "key_properties": ["id"]}\n'),
             call(
-                '{"type": "RECORD", "stream": "roles", "record": {"id": "d893ebf32d49c35c1d754774", "team_id": "T034F9NPW", "name": "0.5"}}\n'
+                '{"type": "RECORD", "stream": "roles", "record": {"id": "d893ebf32d49c35c1d754774", "team_id": "T034F9NPW", "name": "0.5"}, "time_extracted": "2020-01-01T00:00:00.000000Z"}\n'
             ),
             call(
-                '{"type": "RECORD", "stream": "roles", "record": {"id": "cfabd9aa6f3e6381a716da58", "team_id": "T034F9NPW", "name": "0.1"}}\n'
+                '{"type": "RECORD", "stream": "roles", "record": {"id": "cfabd9aa6f3e6381a716da58", "team_id": "T034F9NPW", "name": "0.1"}, "time_extracted": "2020-01-01T00:00:00.000000Z"}\n'
             ),
         ]
         LOGGER.info.assert_called_once_with("Syncing stream: %s", "roles")

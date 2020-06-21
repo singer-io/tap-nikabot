@@ -31,10 +31,10 @@ class TestSyncGroups:
         assert mock_stdout.mock_calls == [
             call('{"type": "SCHEMA", "stream": "groups", "schema": {}, "key_properties": ["id"]}\n'),
             call(
-                '{"type": "RECORD", "stream": "groups", "record": {"id": "f1b4b37cc2658672770b789f", "team_id": "T034F9NPW", "name": "TA Squad 5"}}\n'
+                '{"type": "RECORD", "stream": "groups", "record": {"id": "f1b4b37cc2658672770b789f", "team_id": "T034F9NPW", "name": "TA Squad 5"}, "time_extracted": "2020-01-01T00:00:00.000000Z"}\n'
             ),
             call(
-                '{"type": "RECORD", "stream": "groups", "record": {"id": "3176700ac4f2203b825fae6c", "team_id": "T034F9NPW", "name": "Platform Toolkit"}}\n'
+                '{"type": "RECORD", "stream": "groups", "record": {"id": "3176700ac4f2203b825fae6c", "team_id": "T034F9NPW", "name": "Platform Toolkit"}, "time_extracted": "2020-01-01T00:00:00.000000Z"}\n'
             ),
         ]
         LOGGER.info.assert_called_once_with("Syncing stream: %s", "groups")

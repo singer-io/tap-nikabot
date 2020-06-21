@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+from datetime import datetime, timezone
 from typing import Dict, Any
 import singer
 from singer import utils
@@ -36,17 +37,18 @@ def sync(config: Dict[str, Any], state: Dict[str, Any], catalog: Catalog) -> Non
 
         stream = streams.get(selected_stream.tap_stream_id)
         max_bookmark = last_bookmark if replication_method == "INCREMENTAL" else None
-        for rows in stream().get_records(client, config, bookmark_column, last_bookmark, replication_method):
-            if len(rows) == 0:
+        for records in stream().get_records(client, config, bookmark_column, last_bookmark, replication_method):
+            if len(records) == 0:
                 continue
             # write one or more rows to the stream:
-            singer.write_records(selected_stream.tap_stream_id, rows)
+            for record in records:
+                singer.write_record(selected_stream.tap_stream_id, record, time_extracted=datetime.now(timezone.utc))
             if bookmark_column:
                 if stream.replication_key_is_sorted:
                     # update bookmark to latest value
-                    singer.write_state({selected_stream.tap_stream_id: rows[-1][bookmark_column]})
+                    singer.write_state({selected_stream.tap_stream_id: records[-1][bookmark_column]})
                 else:
-                    local_max_bookmark = max([row[bookmark_column] for row in rows])
+                    local_max_bookmark = max([row[bookmark_column] for row in records])
                     # if data unsorted, save max value until end of writes
                     max_bookmark = max(max_bookmark, local_max_bookmark) if max_bookmark else local_max_bookmark
         if bookmark_column and not stream.replication_key_is_sorted:

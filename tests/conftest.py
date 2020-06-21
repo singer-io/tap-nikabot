@@ -1,4 +1,5 @@
 import logging
+from datetime import datetime, timezone
 from unittest.mock import patch, MagicMock
 import pytest
 
@@ -14,4 +15,11 @@ def mock_stdout():
 @pytest.fixture(autouse=True)
 def mock_logger():
     with patch.object(LOGGER, "info", MagicMock()):
+        yield
+
+
+@pytest.fixture(autouse=True)
+def mock_datetime():
+    with patch("tap_nikabot.datetime", wraps=datetime) as mock:
+        mock.now.return_value = datetime(2020, 1, 1, tzinfo=timezone.utc)
         yield

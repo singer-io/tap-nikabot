@@ -6,6 +6,7 @@ from unittest.mock import call, patch
 import pytest
 from singer.catalog import Catalog, CatalogEntry
 from singer.schema import Schema
+
 from tap_nikabot import sync
 from tap_nikabot.errors import StartDateAfterEndDateError
 
@@ -58,10 +59,10 @@ class TestSyncRecords:
         assert mock_stdout.mock_calls == [
             call('{"type": "SCHEMA", "stream": "records", "schema": {}, "key_properties": ["id"]}\n'),
             call(
-                '{"type": "RECORD", "stream": "records", "record": {"id": "5ee2ca823e056d00141896a0", "team_id": "T034F9NPW", "user_id": "UBM1DQ9RB", "project_name": "CAP - Data Lifecycle", "project_id": "5d6ca9e462a07c00045126ed", "hours": 2.0, "date": "2000-01-01T00:00:00", "created_at": "2020-01-01T00:21:22.779"}}\n'
+                '{"type": "RECORD", "stream": "records", "record": {"id": "5ee2ca823e056d00141896a0", "team_id": "T034F9NPW", "user_id": "UBM1DQ9RB", "project_name": "CAP - Data Lifecycle", "project_id": "5d6ca9e462a07c00045126ed", "hours": 2.0, "date": "2000-01-01T00:00:00", "created_at": "2020-01-01T00:21:22.779"}, "time_extracted": "2020-01-01T00:00:00.000000Z"}\n'
             ),
             call(
-                '{"type": "RECORD", "stream": "records", "record": {"id": "5ee1d52e5cff9100146de745", "team_id": "T034F9NPW", "user_id": "U107SJ4N6", "project_name": "DUX", "project_id": "5d6df702956de30004dc0198", "hours": 7.5, "date": "2020-06-10T00:00:00", "created_at": "2020-06-11T06:54:38.138"}}\n'
+                '{"type": "RECORD", "stream": "records", "record": {"id": "5ee1d52e5cff9100146de745", "team_id": "T034F9NPW", "user_id": "U107SJ4N6", "project_name": "DUX", "project_id": "5d6df702956de30004dc0198", "hours": 7.5, "date": "2020-06-10T00:00:00", "created_at": "2020-06-11T06:54:38.138"}, "time_extracted": "2020-01-01T00:00:00.000000Z"}\n'
             ),
             call('{"type": "STATE", "value": {"records": "2020-06-10T00:00:00"}}\n'),
         ]
@@ -86,17 +87,17 @@ class TestSyncRecords:
         assert mock_stdout.mock_calls == [
             call('{"type": "SCHEMA", "stream": "records", "schema": {}, "key_properties": ["id"]}\n'),
             call(
-                '{"type": "RECORD", "stream": "records", "record": {"id": "5ee2ca823e056d00141896a0", "team_id": "T034F9NPW", "user_id": "UBM1DQ9RB", "project_name": "CAP - Data Lifecycle", "project_id": "5d6ca9e462a07c00045126ed", "hours": 2.0, "date": "2000-01-01T00:00:00", "created_at": "2020-01-01T00:21:22.779"}}\n'
+                '{"type": "RECORD", "stream": "records", "record": {"id": "5ee2ca823e056d00141896a0", "team_id": "T034F9NPW", "user_id": "UBM1DQ9RB", "project_name": "CAP - Data Lifecycle", "project_id": "5d6ca9e462a07c00045126ed", "hours": 2.0, "date": "2000-01-01T00:00:00", "created_at": "2020-01-01T00:21:22.779"}, "time_extracted": "2020-01-01T00:00:00.000000Z"}\n'
             ),
             call(
-                '{"type": "RECORD", "stream": "records", "record": {"id": "5ee1d52e5cff9100146de745", "team_id": "T034F9NPW", "user_id": "U107SJ4N6", "project_name": "DUX", "project_id": "5d6df702956de30004dc0198", "hours": 7.5, "date": "2020-06-10T00:00:00", "created_at": "2020-06-11T06:54:38.138"}}\n'
+                '{"type": "RECORD", "stream": "records", "record": {"id": "5ee1d52e5cff9100146de745", "team_id": "T034F9NPW", "user_id": "U107SJ4N6", "project_name": "DUX", "project_id": "5d6df702956de30004dc0198", "hours": 7.5, "date": "2020-06-10T00:00:00", "created_at": "2020-06-11T06:54:38.138"}, "time_extracted": "2020-01-01T00:00:00.000000Z"}\n'
             ),
             call('{"type": "STATE", "value": {"records": "2020-06-10T00:00:00"}}\n'),
             call(
-                '{"type": "RECORD", "stream": "records", "record": {"id": "5d9d7a035da6700004970476", "team_id": "T034F9NPW", "user_id": "UBM1DQ9RB", "project_name": "Leave (All Kinds)", "project_id": "5d6ca50762a07c00045125fc", "hours": 7.5, "date": "2019-08-20T00:00:00", "created_at": "2019-10-09T06:11:15.976"}}\n'
+                '{"type": "RECORD", "stream": "records", "record": {"id": "5d9d7a035da6700004970476", "team_id": "T034F9NPW", "user_id": "UBM1DQ9RB", "project_name": "Leave (All Kinds)", "project_id": "5d6ca50762a07c00045125fc", "hours": 7.5, "date": "2019-08-20T00:00:00", "created_at": "2019-10-09T06:11:15.976"}, "time_extracted": "2020-01-01T00:00:00.000000Z"}\n'
             ),
             call(
-                '{"type": "RECORD", "stream": "records", "record": {"id": "5d9d79c45da6700004970475", "team_id": "T034F9NPW", "user_id": "UBM1DQ9RB", "project_name": "TX - M1 Assign due dates", "project_id": "5d6e06c9956de30004dc01b0", "hours": 7.5, "date": "2019-08-21T00:00:00", "created_at": "2019-10-09T06:10:12.673"}}\n'
+                '{"type": "RECORD", "stream": "records", "record": {"id": "5d9d79c45da6700004970475", "team_id": "T034F9NPW", "user_id": "UBM1DQ9RB", "project_name": "TX - M1 Assign due dates", "project_id": "5d6e06c9956de30004dc01b0", "hours": 7.5, "date": "2019-08-21T00:00:00", "created_at": "2019-10-09T06:10:12.673"}, "time_extracted": "2020-01-01T00:00:00.000000Z"}\n'
             ),
             call('{"type": "STATE", "value": {"records": "2019-08-21T00:00:00"}}\n'),
         ]
@@ -125,10 +126,10 @@ class TestSyncRecords:
         assert mock_stdout.mock_calls == [
             call('{"type": "SCHEMA", "stream": "records", "schema": {}, "key_properties": ["id"]}\n'),
             call(
-                '{"type": "RECORD", "stream": "records", "record": {"id": "5ee2ca823e056d00141896a0", "team_id": "T034F9NPW", "user_id": "UBM1DQ9RB", "project_name": "CAP - Data Lifecycle", "project_id": "5d6ca9e462a07c00045126ed", "hours": 2.0, "date": "2000-01-01T00:00:00", "created_at": "2020-01-01T00:21:22.779"}}\n'
+                '{"type": "RECORD", "stream": "records", "record": {"id": "5ee2ca823e056d00141896a0", "team_id": "T034F9NPW", "user_id": "UBM1DQ9RB", "project_name": "CAP - Data Lifecycle", "project_id": "5d6ca9e462a07c00045126ed", "hours": 2.0, "date": "2000-01-01T00:00:00", "created_at": "2020-01-01T00:21:22.779"}, "time_extracted": "2020-01-01T00:00:00.000000Z"}\n'
             ),
             call(
-                '{"type": "RECORD", "stream": "records", "record": {"id": "5ee1d52e5cff9100146de745", "team_id": "T034F9NPW", "user_id": "U107SJ4N6", "project_name": "DUX", "project_id": "5d6df702956de30004dc0198", "hours": 7.5, "date": "2020-06-10T00:00:00", "created_at": "2020-06-11T06:54:38.138"}}\n'
+                '{"type": "RECORD", "stream": "records", "record": {"id": "5ee1d52e5cff9100146de745", "team_id": "T034F9NPW", "user_id": "U107SJ4N6", "project_name": "DUX", "project_id": "5d6df702956de30004dc0198", "hours": 7.5, "date": "2020-06-10T00:00:00", "created_at": "2020-06-11T06:54:38.138"}, "time_extracted": "2020-01-01T00:00:00.000000Z"}\n'
             ),
             call('{"type": "STATE", "value": {"records": "2020-06-10T00:00:00"}}\n'),
         ]

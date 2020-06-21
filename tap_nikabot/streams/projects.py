@@ -1,4 +1,4 @@
-from typing import List, Optional, Iterator, Dict, Any
+from typing import List, Iterator, Dict, Any
 
 from singer.schema import Schema
 
