@@ -53,3 +53,19 @@ class TestStream:
         updated_record = Stream.append_timezone_to_datetimes(record, schema)
         assert updated_record["date"] == "2019-08-13T00:00:00+00:00"
         assert updated_record["edited"]["date"] == "2019-10-09T06:14:58.877000+00:00"
+
+    def test_should_ignore_fields_that_dont_parse(self):
+        record = {"id": "5d6ca50762a07c00045125fb", "created_at": "not a date", "edited_at": "2019-09-02T05:13:43.151"}
+        schema = Schema.from_dict(
+            {
+                "properties": {
+                    "created_at": {"format": "date-time", "type": "string"},
+                    "edited_at": {"format": "date-time", "type": "string"},
+                    "id": {"type": "string"},
+                }
+            }
+        )
+        updated_record = Stream.append_timezone_to_datetimes(record, schema)
+        assert updated_record["created_at"] == "not a date"
+        assert updated_record["edited_at"] == "2019-09-02T05:13:43.151000+00:00"
+

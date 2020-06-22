@@ -1,6 +1,7 @@
 from datetime import date, timedelta, datetime
 from typing import List, Optional, Iterator, Any, Dict
 
+from dateutil.parser import isoparse
 from singer import resolve_schema_references
 from singer.schema import Schema
 
@@ -35,11 +36,11 @@ class Records(Stream):
 
         start_date = date.min
         if "start_date" in config:
-            start_date = date.fromisoformat(config["start_date"])
+            start_date = isoparse(config["start_date"]).date()
 
         end_date = date.max
         if "end_date" in config:
-            end_date = date.fromisoformat(config["end_date"])
+            end_date = isoparse(config["end_date"]).date()
             if end_date < start_date:
                 raise StartDateAfterEndDateError(start_date, end_date)
 
@@ -52,7 +53,7 @@ class Records(Stream):
 
             if last_bookmark:
                 # The date field is actually an ISO datetime
-                last_date = datetime.fromisoformat(last_bookmark).date()
+                last_date = isoparse(last_bookmark).date()
                 # We want to resume syncing from next date
                 next_date = last_date + timedelta(days=1)
                 # Don't use a start date earlier than config

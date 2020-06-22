@@ -2,11 +2,15 @@ from abc import ABC, abstractmethod
 from datetime import datetime, timezone
 from typing import Iterator, List, Optional, Dict, Any
 
+import singer
+from dateutil.parser import isoparse
 from singer import CatalogEntry, Schema, metadata
 
 from ..replication_method import ReplicationMethod
 from ..client import Client
 from ..typing import JsonResult
+
+LOGGER = singer.get_logger()
 
 
 class Stream(ABC):
@@ -52,10 +56,13 @@ class Stream(ABC):
             if field.type == "string" and field.format == "date-time":
                 field_value = result.get(field_name)
                 if field_value:
-                    dateval = datetime.fromisoformat(field_value)
-                    if dateval.tzinfo is None:
-                        dateval_utc = datetime.replace(dateval, tzinfo=timezone.utc)
-                        result[field_name] = dateval_utc.isoformat()
+                    try:
+                        dateval = isoparse(field_value)
+                        if dateval.tzinfo is None:
+                            dateval_utc = datetime.replace(dateval, tzinfo=timezone.utc)
+                            result[field_name] = dateval_utc.isoformat()
+                    except ValueError as error:
+                        LOGGER.debug("Unable to convert datetime '%s' to RFC 3339 format: %s", field_name, error)
 
             elif field.properties is not None:
                 field_value = result.get(field_name)
