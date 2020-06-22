@@ -1,5 +1,6 @@
 from typing import Any, Iterator, List, cast, Optional, Union, MutableMapping, Iterable, Tuple, IO
 
+import backoff
 import requests
 import singer
 
@@ -39,6 +40,7 @@ class Client:
                 break
             yield result
 
+    @backoff.on_exception(backoff.constant, requests.exceptions.HTTPError, max_tries=3, interval=10)
     def _make_request(
         self,
         method: str,

@@ -10,7 +10,7 @@ setup(
     url="http://singer.io",
     classifiers=["Programming Language :: Python :: 3 :: Only"],
     py_modules=["tap_nikabot"],
-    install_requires=["singer-python==5.9.0", "requests=2.23.0"],
+    install_requires=["singer-python==5.9.0", "requests==2.23.0", "backoff==1.8.0"],
     entry_points="""
     [console_scripts]
     tap-nikabot=tap_nikabot:main
