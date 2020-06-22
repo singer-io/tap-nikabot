@@ -22,4 +22,4 @@ class Teams(Stream):
         last_bookmark: Any,
         replication_method: Optional[ReplicationMethod],
     ) -> Iterator[List[JsonResult]]:
-        yield client.fetch("/api/v1/teams")
+        yield client.get("/api/v1/teams")

@@ -63,4 +63,4 @@ class Records(Stream):
                 return iter([[]])
 
         params = {"dateStart": start_date.strftime("%Y%m%d"), "dateEnd": end_date.strftime("%Y%m%d")}
-        return client.fetch_all_pages("/api/v1/records", params=params)
+        return client.get_all_pages("/api/v1/records", params=params)

@@ -1,11 +1,18 @@
-from typing import Any, Iterator, List, cast, Dict, Optional
+from typing import Any, Iterator, List, cast, Optional, Union, MutableMapping, Iterable, Tuple, IO
+
 import requests
+import singer
 
 from .errors import ServerError
 from .typing import JsonResult
 
+LOGGER = singer.get_logger()
 MAX_API_PAGES = 10000
 BASE_URL = "https://api.nikabot.com"
+
+_Data = Union[
+    None, str, bytes, MutableMapping[str, Any], MutableMapping[str, Any], Iterable[Tuple[str, Optional[str]]], IO
+]
 
 
 class Client:
@@ -14,27 +21,36 @@ class Client:
         self.session.headers.update({"Authorization": f"Bearer {access_token}"})
         self.page_size = page_size
 
-    def fetch(self, url: str) -> List[JsonResult]:
-        response = self.session.get(BASE_URL + url)
-        return self._get_result(response)
+    def get(self, url: str) -> List[JsonResult]:
+        return self._make_request("GET", url)
 
-    def fetch_paginated(
-        self, page: int, url: str, additional_params: Optional[Dict[str, Any]] = None
+    def get_one_page(
+        self, page: int, url: str, additional_params: Optional[MutableMapping[str, str]] = None
     ) -> List[JsonResult]:
-        params = {"limit": self.page_size, "page": page}
+        params = {"limit": str(self.page_size), "page": str(page)}
         if additional_params:
             params.update(additional_params)
-        response = self.session.get(BASE_URL + url, params=params)
-        return self._get_result(response)
+        return self._make_request("GET", url, params=params)
 
-    def fetch_all_pages(self, url: str, params: Optional[Dict[str, Any]] = None) -> Iterator[List[JsonResult]]:
+    def get_all_pages(self, url: str, params: Optional[MutableMapping[str, str]] = None) -> Iterator[List[JsonResult]]:
         for page in range(MAX_API_PAGES):
-            result = self.fetch_paginated(page, url, params)
+            result = self.get_one_page(page, url, params)
             if len(result) == 0:
                 break
             yield result
 
-    def _get_result(self, response: requests.Response) -> List[JsonResult]:
+    def _make_request(
+        self,
+        method: str,
+        endpoint: str,
+        headers: Optional[MutableMapping[str, str]] = None,
+        params: Union[None, bytes, MutableMapping[str, str]] = None,
+        data: _Data = None,
+    ) -> List[JsonResult]:
+        full_url = BASE_URL + endpoint
+        LOGGER.info("Making %s request to %s with params %s", method.upper(), full_url, params)
+
+        response = self.session.request(method, full_url, headers=headers, params=params, data=data)
         response.raise_for_status()
         result = response.json()
         if not result.get("ok", False):

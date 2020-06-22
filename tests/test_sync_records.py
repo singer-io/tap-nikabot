@@ -71,7 +71,6 @@ class TestSyncRecords:
             ),
             call('{"type": "STATE", "value": {"records": "2020-06-10T00:00:00"}}\n'),
         ]
-        LOGGER.info.assert_called_once_with("Syncing stream: %s", "records")
 
     def test_should_output_multiple_pages(self, mock_stdout, requests_mock, mock_catalog):
         requests_mock.get(
@@ -110,7 +109,6 @@ class TestSyncRecords:
             ),
             call('{"type": "STATE", "value": {"records": "2019-08-21T00:00:00"}}\n'),
         ]
-        LOGGER.info.assert_called_once_with("Syncing stream: %s", "records")
 
     def test_should_use_start_and_end_dates_given_config_set(self, mock_stdout, requests_mock, mock_catalog):
         requests_page0 = requests_mock.get(

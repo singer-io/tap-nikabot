@@ -37,4 +37,3 @@ class TestSyncGroups:
                 '{"type": "RECORD", "stream": "groups", "record": {"id": "3176700ac4f2203b825fae6c", "team_id": "T034F9NPW", "name": "Platform Toolkit"}, "time_extracted": "2020-01-01T00:00:00.000000Z"}\n'
             ),
         ]
-        LOGGER.info.assert_called_once_with("Syncing stream: %s", "groups")

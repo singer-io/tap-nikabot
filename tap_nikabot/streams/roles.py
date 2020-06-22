@@ -22,4 +22,4 @@ class Roles(Stream):
         last_bookmark: Any,
         replication_method: Optional[ReplicationMethod],
     ) -> Iterator[List[JsonResult]]:
-        return client.fetch_all_pages("/api/v1/roles")
+        return client.get_all_pages("/api/v1/roles")

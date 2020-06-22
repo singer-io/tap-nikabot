@@ -1,6 +1,7 @@
 import logging
 from datetime import datetime, timezone
-from unittest.mock import patch, MagicMock
+from unittest.mock import patch
+
 import pytest
 
 LOGGER = logging.getLogger()
@@ -10,12 +11,6 @@ LOGGER = logging.getLogger()
 def mock_stdout():
     with patch("sys.stdout.write") as mock:
         yield mock
-
-
-@pytest.fixture(autouse=True)
-def mock_logger():
-    with patch.object(LOGGER, "info", MagicMock()):
-        yield
 
 
 @pytest.fixture(autouse=True)

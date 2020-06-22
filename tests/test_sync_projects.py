@@ -39,4 +39,3 @@ class TestSyncProjects:
                 '{"type": "RECORD", "stream": "projects", "record": {"id": "5d6ca97c62a07c00045126e8", "project_name": "CAP - Authentication", "team_id": "T034F9NPW", "author": "U6K26HMGV", "pto": {"status": false}, "custom_ref": "", "create_date": "2019-09-02T05:32:44.172", "client": "", "type": "Capability Custodian", "created_at": "2019-09-02T05:32:44.172", "assigned_groups": ["Authentication"]}, "time_extracted": "2020-01-01T00:00:00.000000Z"}\n'
             ),
         ]
-        LOGGER.info.assert_called_once_with("Syncing stream: %s", "projects")
