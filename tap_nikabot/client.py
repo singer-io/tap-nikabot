@@ -3,6 +3,7 @@ from typing import Any, Iterator, List, cast, Optional, Union, MutableMapping, I
 import backoff
 import requests
 import singer
+from singer import utils
 
 from .errors import ServerError
 from .typing import JsonResult
@@ -41,6 +42,7 @@ class Client:
             yield result
 
     @backoff.on_exception(backoff.constant, requests.exceptions.HTTPError, max_tries=3, interval=10)
+    @utils.ratelimit(250, 60)
     def _make_request(
         self,
         method: str,
@@ -60,8 +62,11 @@ class Client:
         return cast(List[JsonResult], result["result"])
 
     @staticmethod
+    @backoff.on_exception(backoff.constant, requests.exceptions.HTTPError, max_tries=3, interval=10)
     def fetch_swagger_definition() -> Any:
-        response = requests.get(f"{BASE_URL}/v2/api-docs?group=public")
+        full_url = BASE_URL + "/v2/api-docs?group=public"
+        LOGGER.info("Fetching swagger definition from %s", full_url)
+        response = requests.get(full_url)
         response.raise_for_status()
         swagger = response.json()
         return swagger
