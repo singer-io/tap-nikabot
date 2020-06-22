@@ -42,7 +42,7 @@ class Stream(ABC):
         return catalog_entry
 
     @classmethod
-    def append_timezone_to_datetimes(cls, record: JsonResult, schema: Schema) -> JsonResult:
+    def convert_dates_to_rfc3339(cls, record: JsonResult, schema: Schema) -> JsonResult:
         """Appends UTC timezone information to all date-time fields.
 
         This ensures they are RFC 3339 compliant as per the JSON Schema spec.
@@ -67,7 +67,7 @@ class Stream(ABC):
             elif field.properties is not None:
                 field_value = result.get(field_name)
                 if field_value:
-                    result[field_name] = cls.append_timezone_to_datetimes(field_value, field)
+                    result[field_name] = cls.convert_dates_to_rfc3339(field_value, field)
 
         return result
 

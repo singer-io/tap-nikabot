@@ -1,14 +1,14 @@
-from datetime import date, timedelta, datetime
+from datetime import date, timedelta
 from typing import List, Optional, Iterator, Any, Dict
 
 from dateutil.parser import isoparse
 from singer import resolve_schema_references
 from singer.schema import Schema
 
-from ..replication_method import ReplicationMethod
 from .stream import Stream
 from ..client import Client
 from ..errors import InvalidReplicationKeyError, StartDateAfterEndDateError
+from ..replication_method import ReplicationMethod
 from ..typing import JsonResult
 
 

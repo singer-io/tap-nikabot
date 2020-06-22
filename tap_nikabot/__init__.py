@@ -48,7 +48,7 @@ def sync(config: Dict[str, Any], state: Dict[str, Any], catalog: Catalog) -> Non
                 continue
             # write one or more rows to the stream:
             for record in records:
-                modified_record = Stream.append_timezone_to_datetimes(record, selected_stream.schema)
+                modified_record = Stream.convert_dates_to_rfc3339(record, selected_stream.schema)
                 singer.write_record(
                     selected_stream.tap_stream_id, modified_record, time_extracted=datetime.now(timezone.utc)
                 )
