@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+from datetime import datetime, timezone
 from typing import Iterator, List, Optional, Dict, Any
 
 from singer import CatalogEntry, Schema, metadata
@@ -32,9 +33,36 @@ class Stream(ABC):
             key_properties=self.key_properties,
             metadata=stream_metadata,
             replication_key=self.replication_key,
-            replication_method=self.replication_method,
+            replication_method=self.replication_method.name if self.replication_method else None,
         )
         return catalog_entry
+
+    @classmethod
+    def append_timezone_to_datetimes(cls, record: JsonResult, schema: Schema) -> JsonResult:
+        """Appends UTC timezone information to all date-time fields.
+
+        This ensures they are RFC 3339 compliant as per the JSON Schema spec.
+        Returns a clone of record with updated date-time, does not modify original record.
+        """
+        result = record.copy()
+        if schema.properties is None:
+            return result
+
+        for field_name, field in schema.properties.items():
+            if field.type == "string" and field.format == "date-time":
+                field_value = result.get(field_name)
+                if field_value:
+                    dateval = datetime.fromisoformat(field_value)
+                    if dateval.tzinfo is None:
+                        dateval_utc = datetime.replace(dateval, tzinfo=timezone.utc)
+                        result[field_name] = dateval_utc.isoformat()
+
+            elif field.properties is not None:
+                field_value = result.get(field_name)
+                if field_value:
+                    result[field_name] = cls.append_timezone_to_datetimes(field_value, field)
+
+        return result
 
     @abstractmethod
     def get_records(

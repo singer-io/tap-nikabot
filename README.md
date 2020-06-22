@@ -65,7 +65,15 @@ Cutoff days cannot be combined with an end date in config. If an end date is pro
 
 #### Example
 
-## ![cutoff_days_example](/Users/paul/Projects/tap-nikabot/cutoff_days_example.png)Development
+## ![cutoff_days_example](/Users/paul/Projects/tap-nikabot/cutoff_days_example.png)Reformatted dates
+
+The Nikabot API returns dates in ISO 8601format without any timezone information. This is not compatible with [JSON Schema which requires RFC 3339 formatted dates](https://json-schema.org/draft/2019-09/json-schema-validation.html#rfc.section.7.3), which are a subset of the ISO specification but mandates timezones. To allow the Nikabot data to be successfully vaidated against the schema, we post-process the data to add timezone information by assuming all dates are in UTC.
+
+So `2019-09-02T05:13:43.151` becomes `2019-09-02T05:13:43.151000+00:00`.
+
+This process uses the schema to determine which dates to reformat, if there is no schema information for the datetime field (e.g. blank schema `{}` ), then the dates will not be adjusted.
+
+## Development
 
 A Makefile is provided to manage a virtual environment.
 

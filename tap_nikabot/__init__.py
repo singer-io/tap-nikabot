@@ -7,6 +7,7 @@ from singer.catalog import Catalog
 
 from .replication_method import ReplicationMethod
 from . import streams
+from .streams.stream import Stream
 from .client import Client
 
 LOGGER = singer.get_logger()
@@ -47,7 +48,10 @@ def sync(config: Dict[str, Any], state: Dict[str, Any], catalog: Catalog) -> Non
                 continue
             # write one or more rows to the stream:
             for record in records:
-                singer.write_record(selected_stream.tap_stream_id, record, time_extracted=datetime.now(timezone.utc))
+                modified_record = Stream.append_timezone_to_datetimes(record, selected_stream.schema)
+                singer.write_record(
+                    selected_stream.tap_stream_id, modified_record, time_extracted=datetime.now(timezone.utc)
+                )
             if bookmark_column:
                 if stream.replication_key_is_sorted:
                     # update bookmark to latest value
