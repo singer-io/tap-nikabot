@@ -137,7 +137,3 @@ Update REQUESTS_CA_BUNDLE to point to the CA certificate for the proxy tool. Now
 $ ./env.sh make discover > catalog.json
 $ ./env.sh tap-nikabot -c config.json --catalog catalog.json
 ```
-
-## Todo
-
-- [ ] Run [singer-check-tap](https://github.com/singer-io/singer-tools#singer-check-tap) tool to validate

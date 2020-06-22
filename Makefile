@@ -40,8 +40,19 @@ test: lint
         coverage run -m pytest; \
 		coverage report
 
+build: test
+	rm -rf dist
+	source $(VENV_ACTIVATE); \
+        python setup.py sdist
+
+deploy: build
+	twine upload dist/*
+
+deploy-test: build
+	twine upload --repository-url https://test.pypi.org/legacy/ dist/*
+
 db:
 	docker run -e POSTGRES_PASSWORD=stitches -p 5432:5432 --rm postgres
 
-.PHONY: init discover sync lint test db
+.PHONY: init discover sync lint test build deploy deploy-test db
 .SILENT:

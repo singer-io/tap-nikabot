@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-from setuptools import setup
+from setuptools import setup, find_packages
 
 setup(
     name="tap-nikabot",
@@ -15,7 +15,7 @@ setup(
     [console_scripts]
     tap-nikabot=tap_nikabot:main
     """,
-    packages=["tap_nikabot"],
+    packages=find_packages(exclude=("tests",)),
     package_data={"schemas": ["tap_nikabot/schemas/*.json"]},
     include_package_data=True,
 )
