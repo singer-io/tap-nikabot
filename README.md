@@ -65,7 +65,9 @@ Cutoff days cannot be combined with an end date in config. If an end date is pro
 
 #### Example
 
-![Cutoff Days Example Diagram](docs/cutoff_days_example.png)
+![Cutoff Days Example Diagram](https://raw.githubusercontent.com/phdesign/tap-nikabot/master/docs/cutoff_days_example.png)
+
+
 
 ## Reformatted dates
 
