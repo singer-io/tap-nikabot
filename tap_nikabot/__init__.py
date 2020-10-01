@@ -2,7 +2,7 @@
 from datetime import datetime, timezone
 from typing import Dict, Any
 import singer
-from singer import utils
+from singer import utils, Transformer, metadata
 from singer.catalog import Catalog
 
 from .replication_method import ReplicationMethod
@@ -47,11 +47,17 @@ def sync(config: Dict[str, Any], state: Dict[str, Any], catalog: Catalog) -> Non
             if len(records) == 0:
                 continue
             # write one or more rows to the stream:
-            for record in records:
-                modified_record = Stream.convert_dates_to_rfc3339(record, selected_stream.schema)
-                singer.write_record(
-                    selected_stream.tap_stream_id, modified_record, time_extracted=datetime.now(timezone.utc)
-                )
+            with Transformer() as transformer:
+                for record in records:
+                    singer.write_record(
+                        selected_stream.tap_stream_id,
+                        transformer.transform(
+                            record,
+                            selected_stream.schema.to_dict(),
+                            metadata.to_map(selected_stream.metadata),
+                        ),
+                        time_extracted=datetime.now(timezone.utc),
+                    )
             if bookmark_column:
                 if stream.replication_key_is_sorted:
                     # update bookmark to latest value

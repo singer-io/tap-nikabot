@@ -1,6 +1,6 @@
 # tap-nikabot
 
-This is a [Singer](https://singer.io) tap that produces JSON-formatted data following the [Singer spec](https://github.com/singer-io/getting-started/blob/master/SPEC.md) to retrieve [Nikabot](https://www.nikabot.com/) timesheeting data from the [Nikabot API](https://api.nikabot.com/swagger-ui.html#/).
+This is a [Singer](https://singer.io) tap that produces JSON-formatted data following the [Singer spec](https://github.com/singer-io/getting-started) to retrieve [Nikabot](https://www.nikabot.com/) timesheeting data from the [Nikabot API](https://api.nikabot.com/swagger-ui.html#/).
 
 ## Quickstart
 
