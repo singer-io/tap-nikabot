@@ -7,7 +7,6 @@ from singer.catalog import Catalog
 
 from .replication_method import ReplicationMethod
 from . import streams
-from .streams.stream import Stream
 from .client import Client
 
 LOGGER = singer.get_logger()
@@ -52,9 +51,7 @@ def sync(config: Dict[str, Any], state: Dict[str, Any], catalog: Catalog) -> Non
                     singer.write_record(
                         selected_stream.tap_stream_id,
                         transformer.transform(
-                            record,
-                            selected_stream.schema.to_dict(),
-                            metadata.to_map(selected_stream.metadata),
+                            record, selected_stream.schema.to_dict(), metadata.to_map(selected_stream.metadata),
                         ),
                         time_extracted=datetime.now(timezone.utc),
                     )
