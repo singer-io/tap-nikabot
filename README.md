@@ -57,7 +57,7 @@ Start date and end date take preferrence over bookmarks. If you have a bookmark 
 
 The Nikabot API only allows for filtering timesheet records by timesheet day, and only returns the created date not a modified date, his makes incremental replication a challenge. To support incremental replication, we've introduced a concept of cutoff days.
 
-When `replication-method: "INCREMENTAL"` is specified in the catalog for the records stream, the timesheet date is used as a bookmark / replication key and the tap will only sync records up to "cutoff_days" (defaults to 10 days) before today. Users have the cutoff days period to enter their timesheet information after which their entries will not be synced. 
+When `replication-method: "INCREMENTAL"` is specified in the catalog for the records stream, the timesheet date is used as a bookmark / replication key and the tap will only sync records up to "cutoff_days" (defaults to 10 days) before today. Users have the cutoff days period to enter their timesheet information after which their entries will not be synced.
 
 Note that because the timesheet date is a date only (not time), you will only be update to sync at most once per day.
 
@@ -87,7 +87,7 @@ $ make init
 
 Will setup a [virtual environment](https://docs.python.org/3/tutorial/venv.html) in `.venv` and install the package and all (development and production) dependencies.
 
-To run the linter / autoformatter (provided by [black](https://black.readthedocs.io/en/stable/)) 
+To run the linter / autoformatter (provided by [black](https://black.readthedocs.io/en/stable/))
 
 ```
 $ make lint
@@ -141,3 +141,7 @@ Update REQUESTS_CA_BUNDLE to point to the CA certificate for the proxy tool. Now
 $ ./env.sh make discover > catalog.json
 $ ./env.sh tap-nikabot -c config.json --catalog catalog.json
 ```
+
+---
+
+Copyright &copy; 2020 Stitch
