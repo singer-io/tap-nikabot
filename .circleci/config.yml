@@ -8,6 +8,9 @@ jobs:
       - run:
           name: 'Setup virtual env'
           command: |
+            pyenv global 3.6.9
+            pyenv rehash
+            pip install awscli
             python3 -mvenv /usr/local/share/virtualenvs/tap-nikabot
             source /usr/local/share/virtualenvs/tap-nikabot/bin/activate
             pip install -U 'pip<19.2' setuptools
