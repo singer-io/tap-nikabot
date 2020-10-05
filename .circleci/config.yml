@@ -13,11 +13,6 @@ jobs:
             pip install -U 'pip<19.2' setuptools
             pip install .[dev]
       - run:
-          name: 'JSON Validator'
-          command: |
-            source /usr/local/share/virtualenvs/tap-tester/bin/activate
-            stitch-validate-json /usr/local/share/virtualenvs/tap-nikabot/lib/python3.5/site-packages/tap_nikabot/schemas/*.json
-      - run:
           name: 'pylint'
           command: |
             source /usr/local/share/virtualenvs/tap-nikabot/bin/activate
