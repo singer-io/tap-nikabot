@@ -1,9 +1,7 @@
 from abc import ABC, abstractmethod
-from datetime import datetime, timezone
 from typing import Iterator, List, Optional, Dict, Any
 
 import singer
-from dateutil.parser import isoparse
 from singer import CatalogEntry, Schema, metadata
 
 from ..replication_method import ReplicationMethod

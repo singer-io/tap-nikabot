@@ -2,7 +2,7 @@
 import argparse
 import pkg_resources
 from datetime import datetime, timezone
-from typing import Dict, Any
+from typing import Dict, Any, cast
 import singer
 from singer import utils, Transformer, metadata
 from singer.catalog import Catalog
@@ -35,14 +35,22 @@ def sync(config: Dict[str, Any], state: Dict[str, Any], catalog: Catalog) -> Non
     for selected_stream in catalog.get_selected_streams(state):
         LOGGER.info("Syncing stream: %s", selected_stream.tap_stream_id)
 
+        bookmark_column = selected_stream.replication_key
+        replication_method = (
+            ReplicationMethod[selected_stream.replication_method] if selected_stream.replication_method else None
+        )
+        last_bookmark = state.get(selected_stream.tap_stream_id)
+
         singer.write_schema(
             stream_name=selected_stream.tap_stream_id,
             schema=selected_stream.schema.to_dict(),
             key_properties=selected_stream.key_properties,
+            bookmark_properties=[bookmark_column] if bookmark_column else None,
         )
 
         stream = streams.get(selected_stream.tap_stream_id)
-        for records in stream().get_records(client, config, replication_method=ReplicationMethod.FULL_TABLE):
+        max_bookmark = last_bookmark if replication_method == ReplicationMethod.INCREMENTAL else None
+        for records in stream().get_records(client, config, bookmark_column, last_bookmark, replication_method):
             if len(records) == 0:
                 continue
             # write one or more rows to the stream:
@@ -55,13 +63,23 @@ def sync(config: Dict[str, Any], state: Dict[str, Any], catalog: Catalog) -> Non
                         ),
                         time_extracted=datetime.now(timezone.utc),
                     )
+            if bookmark_column:
+                if stream.replication_key_is_sorted:
+                    # update bookmark to latest value
+                    singer.write_state({selected_stream.tap_stream_id: records[-1][bookmark_column]})
+                else:
+                    local_max_bookmark = max([row[bookmark_column] for row in records])
+                    # if data unsorted, save max value until end of writes
+                    max_bookmark = max(max_bookmark, local_max_bookmark) if max_bookmark else local_max_bookmark
+        if bookmark_column and not stream.replication_key_is_sorted:
+            singer.write_state({selected_stream.tap_stream_id: max_bookmark})
 
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser()
     parser.add_argument("--version", action="version", version="%(prog)s v" + __version__)
     parser.parse_known_args()
-    return utils.parse_args(REQUIRED_CONFIG_KEYS)
+    return cast(argparse.Namespace, utils.parse_args(REQUIRED_CONFIG_KEYS))
 
 
 @utils.handle_top_exception(LOGGER)
