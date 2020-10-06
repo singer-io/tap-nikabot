@@ -41,36 +41,6 @@ class Stream(ABC):
         )
         return catalog_entry
 
-    @classmethod
-    def convert_dates_to_rfc3339(cls, record: JsonResult, schema: Schema) -> JsonResult:
-        """Appends UTC timezone information to all date-time fields.
-
-        This ensures they are RFC 3339 compliant as per the JSON Schema spec.
-        Returns a clone of record with updated date-time, does not modify original record.
-        """
-        result = record.copy()
-        if schema.properties is None:
-            return result
-
-        for field_name, field in schema.properties.items():
-            if field.type == "string" and field.format == "date-time":
-                field_value = result.get(field_name)
-                if field_value:
-                    try:
-                        dateval = isoparse(field_value)
-                        if dateval.tzinfo is None:
-                            dateval_utc = datetime.replace(dateval, tzinfo=timezone.utc)
-                            result[field_name] = dateval_utc.isoformat()
-                    except ValueError as error:
-                        LOGGER.debug("Unable to convert datetime '%s' to RFC 3339 format: %s", field_name, error)
-
-            elif field.properties is not None:
-                field_value = result.get(field_name)
-                if field_value:
-                    result[field_name] = cls.convert_dates_to_rfc3339(field_value, field)
-
-        return result
-
     @abstractmethod
     def get_records(
         self,
