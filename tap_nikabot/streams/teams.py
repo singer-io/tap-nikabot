@@ -22,4 +22,5 @@ class Teams(Stream):
         last_bookmark: Any,
         replication_method: Optional[ReplicationMethod],
     ) -> Iterator[List[JsonResult]]:
+        self.validate_replication_method(replication_method)
         yield client.get("/api/v1/teams")

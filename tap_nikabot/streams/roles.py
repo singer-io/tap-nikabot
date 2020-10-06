@@ -22,4 +22,5 @@ class Roles(Stream):
         last_bookmark: Any,
         replication_method: Optional[ReplicationMethod],
     ) -> Iterator[List[JsonResult]]:
+        self.validate_replication_method(replication_method)
         return client.get_all_pages("/api/v1/roles")

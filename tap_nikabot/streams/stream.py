@@ -4,6 +4,7 @@ from typing import Iterator, List, Optional, Dict, Any
 import singer
 from singer import CatalogEntry, Schema, metadata
 
+from tap_nikabot.errors import InvalidReplicationMethodError
 from ..replication_method import ReplicationMethod
 from ..client import Client
 from ..typing import JsonResult
@@ -17,6 +18,7 @@ class Stream(ABC):
     replication_key: Optional[str] = None
     replication_method: Optional[ReplicationMethod] = None
     replication_key_is_sorted: bool = False
+    valid_replication_methods: List[ReplicationMethod] = [ReplicationMethod.FULL_TABLE]
 
     def get_catalog_entry(self, swagger: JsonResult) -> CatalogEntry:
         schema = self._map_to_schema(swagger)
@@ -38,6 +40,10 @@ class Stream(ABC):
             replication_method=self.replication_method.name if self.replication_method else None,
         )
         return catalog_entry
+
+    def validate_replication_method(self, replication_method: Optional[ReplicationMethod]) -> None:
+        if replication_method and replication_method not in self.valid_replication_methods:
+            raise InvalidReplicationMethodError(replication_method, self.valid_replication_methods)
 
     @abstractmethod
     def get_records(

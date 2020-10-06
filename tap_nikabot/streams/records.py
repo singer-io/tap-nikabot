@@ -28,6 +28,8 @@ class Records(Stream):
         last_bookmark: Any,
         replication_method: Optional[ReplicationMethod],
     ) -> Iterator[List[JsonResult]]:
+        self.validate_replication_method(replication_method)
+
         start_date = date.min
         if "start_date" in config:
             start_date = isoparse(config["start_date"]).date()
