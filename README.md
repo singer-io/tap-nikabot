@@ -46,28 +46,12 @@ A sample config is provided in `config_sample.json`.
 | access_token | None    | **Required.** Nikabot API access token                       |
 | page_size    | 1000    | Allows configuring the number of records returned in each server request. |
 | start_date   | None    | The timesheet date to start pulling records from. If not provided will sync from the beginning of time. |
-| end_date     | None    | The timesheet date to start pulling records up to. If not provided will sync up to todays date, but see note about cutoff days. |
-| cutoff_days  | 10      | When using incremental replication, will only sync records up to this many days before todays date. |
+| end_date     | None    | The timesheet date to start pulling records up to. If not provided will sync up to todays date. |
+|              |         |                                                              |
 
-### A note on bookmarks
+## Supported replication methods
 
-Start date and end date take preferrence over bookmarks. If you have a bookmark that is earlier than the configured start date, syncing will start from start date. If you have a bookmark that is greater than end date, no records will be returned.
-
-### Cutoff days
-
-The Nikabot API only allows for filtering timesheet records by timesheet day, and only returns the created date not a modified date, his makes incremental replication a challenge. To support incremental replication, we've introduced a concept of cutoff days.
-
-When `replication-method: "INCREMENTAL"` is specified in the catalog for the records stream, the timesheet date is used as a bookmark / replication key and the tap will only sync records up to "cutoff_days" (defaults to 10 days) before today. Users have the cutoff days period to enter their timesheet information after which their entries will not be synced.
-
-Note that because the timesheet date is a date only (not time), you will only be update to sync at most once per day.
-
-Cutoff days cannot be combined with an end date in config. If an end date is provided, cutoff days will be ignored and records will be synced right up to end date.
-
-#### Example
-
-![Cutoff Days Example Diagram](https://raw.githubusercontent.com/phdesign/tap-nikabot/master/docs/cutoff_days_example.png)
-
-
+The Nikabot API only allows for filtering timesheet records by timesheet day, and only returns the created date not a modified date, this means we're unable to provide incremental replication. The only supported replication method for all streams is `replication-method: "FULL_TABLE"`.
 
 ## Reformatted dates
 
