@@ -722,8 +722,7 @@
     },
     {
       "tap_stream_id": "records",
-      "replication_key": "date",
-      "replication_method": "INCREMENTAL",
+      "replication_method": "FULL_TABLE",
       "key_properties": [
         "id"
       ],

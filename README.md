@@ -47,7 +47,6 @@ A sample config is provided in `config_sample.json`.
 | page_size    | 1000    | Allows configuring the number of records returned in each server request. |
 | start_date   | None    | The timesheet date to start pulling records from. If not provided will sync from the beginning of time. |
 | end_date     | None    | The timesheet date to start pulling records up to. If not provided will sync up to todays date. |
-|              |         |                                                              |
 
 ## Supported replication methods
 
