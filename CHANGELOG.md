@@ -1,6 +1,6 @@
 # Changelog
 
-## 1.0.3
+## 1.0.4
 - Preparing for alpha release
 
 ## 1.0.2
