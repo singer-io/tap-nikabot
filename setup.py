@@ -6,7 +6,7 @@ with open("README.md") as f:
 
 setup(
     name="tap-nikabot",
-    version="1.0.3",
+    version="1.0.4",
     description="Singer.io tap for extracting data from Nikabot",
     python_requires=">=3.6.0",
     long_description=readme,
