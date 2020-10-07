@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.0.5
+- Fix setup.py to not specify drescription to avoid issues with deploy script
+- Incorporate make lint and make test into circle
+
 ## 1.0.4
 - Preparing for alpha release
 
