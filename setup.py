@@ -8,6 +8,7 @@ setup(
     name="tap-nikabot",
     version="1.0.2",
     description="Singer.io tap for extracting data from Nikabot",
+    python_requires=">=3.6.0",
     long_description=readme,
     long_description_content_type="text/markdown",
     author="Paul Heasley",
@@ -18,6 +19,12 @@ setup(
     classifiers=["Programming Language :: Python :: 3 :: Only"],
     py_modules=["tap_nikabot"],
     install_requires=["singer-python==5.9.0", "requests==2.23.0", "backoff==1.8.0"],
+    extras_require={
+        'dev': [
+            'pylint',
+            'ipdb',
+        ]
+    },
     entry_points="""
     [console_scripts]
     tap-nikabot=tap_nikabot:main
