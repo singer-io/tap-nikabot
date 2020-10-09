@@ -1,11 +1,17 @@
-from typing import List, Iterator, Any, Dict, Optional
+from typing import (
+    Any,
+    Dict,
+    Iterator,
+    List,
+    Optional,
+)
 
 from singer.schema import Schema
 
-from ..replication_method import ReplicationMethod
-from .stream import Stream
 from ..client import Client
+from ..replication_method import ReplicationMethod
 from ..typing import JsonResult
+from .stream import Stream
 
 
 class Teams(Stream):

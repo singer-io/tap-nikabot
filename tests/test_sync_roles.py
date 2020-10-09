@@ -1,8 +1,10 @@
 import json
 import logging
 from unittest.mock import call
+
 from singer.catalog import Catalog, CatalogEntry
 from singer.schema import Schema
+
 from tap_nikabot import sync
 
 LOGGER = logging.getLogger()

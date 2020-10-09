@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-from setuptools import setup, find_packages
+from setuptools import find_packages, setup
 
 setup(
     name="tap-nikabot",
@@ -20,6 +20,7 @@ setup(
             "black==19.10b0",
             "coverage==5.1",
             "flake8==3.8.3",
+            "isort==4.3.21",
             "mypy==0.780",
             "pytest==5.4.3",
             "pytest-socket==0.3.5",

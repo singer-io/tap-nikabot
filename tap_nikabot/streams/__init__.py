@@ -1,12 +1,12 @@
 from typing import List, Type
 
+from .groups import Groups
 from .projects import Projects
 from .records import Records
-from .stream import Stream
-from .users import Users
 from .roles import Roles
-from .groups import Groups
+from .stream import Stream
 from .teams import Teams
+from .users import Users
 
 all_streams: List[Type[Stream]] = [Users, Roles, Groups, Teams, Projects, Records]
 

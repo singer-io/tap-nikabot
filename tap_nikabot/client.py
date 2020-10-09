@@ -1,4 +1,15 @@
-from typing import Any, Iterator, List, cast, Optional, Union, MutableMapping, Iterable, Tuple, IO
+from typing import (
+    IO,
+    Any,
+    Iterable,
+    Iterator,
+    List,
+    MutableMapping,
+    Optional,
+    Tuple,
+    Union,
+    cast,
+)
 
 import backoff
 import requests

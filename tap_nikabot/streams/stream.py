@@ -1,12 +1,19 @@
 from abc import ABC, abstractmethod
-from typing import Iterator, List, Optional, Dict, Any
+from typing import (
+    Any,
+    Dict,
+    Iterator,
+    List,
+    Optional,
+)
 
 import singer
 from singer import CatalogEntry, Schema, metadata
 
 from tap_nikabot.errors import InvalidReplicationMethodError
-from ..replication_method import ReplicationMethod
+
 from ..client import Client
+from ..replication_method import ReplicationMethod
 from ..typing import JsonResult
 
 LOGGER = singer.get_logger()

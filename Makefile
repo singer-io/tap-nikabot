@@ -32,6 +32,7 @@ sync:
 lint:
 	source $(VENV_ACTIVATE); \
 		black -l 120 tap_nikabot tests *.py; \
+		isort -rc tap_nikabot tests *.py; \
 		flake8 --exit-zero tap_nikabot tests *.py; \
 		mypy --strict tap_nikabot || true
 

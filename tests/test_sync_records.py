@@ -8,7 +8,7 @@ from singer.catalog import Catalog, CatalogEntry
 from singer.schema import Schema
 
 from tap_nikabot import sync
-from tap_nikabot.errors import StartDateAfterEndDateError, InvalidReplicationMethodError
+from tap_nikabot.errors import InvalidReplicationMethodError, StartDateAfterEndDateError
 
 LOGGER = logging.getLogger()
 EMPTY_RESPONSE = '{"ok":true,"result":[]}'

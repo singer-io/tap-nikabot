@@ -1,15 +1,21 @@
 from datetime import date
-from typing import List, Optional, Iterator, Any, Dict
+from typing import (
+    Any,
+    Dict,
+    Iterator,
+    List,
+    Optional,
+)
 
 from dateutil.parser import isoparse
 from singer import resolve_schema_references
 from singer.schema import Schema
 
-from .stream import Stream
 from ..client import Client
 from ..errors import StartDateAfterEndDateError
 from ..replication_method import ReplicationMethod
 from ..typing import JsonResult
+from .stream import Stream
 
 
 class Records(Stream):

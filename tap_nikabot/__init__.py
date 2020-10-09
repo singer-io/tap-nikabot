@@ -1,15 +1,16 @@
 #!/usr/bin/env python3
 import argparse
-import pkg_resources
 from datetime import datetime, timezone
-from typing import Dict, Any, cast
+from typing import Any, Dict, cast
+
+import pkg_resources
 import singer
-from singer import utils, Transformer, metadata
+from singer import Transformer, metadata, utils
 from singer.catalog import Catalog
 
-from .replication_method import ReplicationMethod
 from . import streams
 from .client import Client
+from .replication_method import ReplicationMethod
 
 LOGGER = singer.get_logger()
 DEFAULT_CONFIG = {"page_size": 1000}
