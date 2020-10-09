@@ -52,8 +52,10 @@ deploy: build
 deploy-test: build
 	twine upload --repository-url https://test.pypi.org/legacy/ dist/*
 
-db:
-	docker run -e POSTGRES_PASSWORD=stitches -p 5432:5432 --rm postgres
+clean:
+	rm -rf .venv .pytest_cache .mypy_cache dist *.egg-info
+	find . -iname "*.pyc" -delete
+	find . -type d -name "__pycache__" -delete
 
-.PHONY: init discover sync lint test build deploy deploy-test db
+.PHONY: init discover sync lint test build deploy deploy-test clean
 .SILENT:

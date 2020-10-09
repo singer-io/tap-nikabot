@@ -18,6 +18,15 @@ from ..typing import JsonResult
 from .stream import Stream
 
 
+def format_date(val: date) -> str:
+    """Formats a date as %Y%m%d.
+
+    Don't use strftime because it's inconsistent across platforms.
+    https://bugs.python.org/issue13305
+    """
+    return f"{val.year:04}{val.month:02}{val.day:02}"
+
+
 class Records(Stream):
     stream_id: str = "records"
 
@@ -46,5 +55,5 @@ class Records(Stream):
             if end_date < start_date:
                 raise StartDateAfterEndDateError(start_date, end_date)
 
-        params = {"dateStart": start_date.strftime("%Y%m%d"), "dateEnd": end_date.strftime("%Y%m%d")}
+        params = {"dateStart": format_date(start_date), "dateEnd": format_date(end_date)}
         return client.get_all_pages("/api/v1/records", params=params)
