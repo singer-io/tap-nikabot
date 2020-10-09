@@ -17,13 +17,13 @@ setup(
         "dev": [
             "pylint",
             "ipdb",
-            "black~=19.10b0",
-            "coverage~=5.1",
-            "flake8~=3.8.3",
-            "mypy~=0.780",
-            "pytest~=5.4.3",
-            "pytest-socket~=0.3.5",
-            "requests-mock~=1.8.0",
+            "black==19.10b0",
+            "coverage==5.1",
+            "flake8==3.8.3",
+            "mypy==0.780",
+            "pytest==5.4.3",
+            "pytest-socket==0.3.5",
+            "requests-mock==1.8.0",
         ]
     },
     entry_points="""
