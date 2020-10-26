@@ -1,5 +1,5 @@
 from logging import Logger
-from typing import Callable, Any, TypeVar
+from typing import Any, Callable, TypeVar
 
 F = TypeVar('F', bound=Callable[..., Any])
 

@@ -1,4 +1,10 @@
-from typing import Callable, Any, TypeVar, Type, Iterator
+from typing import (
+    Any,
+    Callable,
+    Iterator,
+    Type,
+    TypeVar,
+)
 
 F = TypeVar('F', bound=Callable[..., Any])
 

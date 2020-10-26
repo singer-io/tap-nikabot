@@ -1,11 +1,17 @@
-from typing import List, Iterator, Dict, Any, Optional
+from typing import (
+    Any,
+    Dict,
+    Iterator,
+    List,
+    Optional,
+)
 
 from singer.schema import Schema
 
-from ..replication_method import ReplicationMethod
-from .stream import Stream
 from ..client import Client
+from ..replication_method import ReplicationMethod
 from ..typing import JsonResult
+from .stream import Stream
 
 
 class Projects(Stream):
@@ -22,4 +28,5 @@ class Projects(Stream):
         last_bookmark: Any,
         replication_method: Optional[ReplicationMethod],
     ) -> Iterator[List[JsonResult]]:
+        self.validate_replication_method(replication_method)
         return client.get_all_pages("/api/v1/projects")

@@ -1,17 +1,26 @@
 #!/usr/bin/env python3
+import argparse
 from datetime import datetime, timezone
-from typing import Dict, Any
+from typing import Any, Dict, cast
+
+import pkg_resources
 import singer
-from singer import utils, Transformer, metadata
+from singer import Transformer, metadata, utils
 from singer.catalog import Catalog
 
-from .replication_method import ReplicationMethod
 from . import streams
 from .client import Client
+from .replication_method import ReplicationMethod
 
 LOGGER = singer.get_logger()
-DEFAULT_CONFIG = {"page_size": 1000, "cutoff_days": 10}
+DEFAULT_CONFIG = {"page_size": 1000}
 REQUIRED_CONFIG_KEYS = ["access_token"]
+
+
+try:
+    __version__ = pkg_resources.get_distribution("tap-nikabot").version
+except pkg_resources.DistributionNotFound:
+    __version__ = "0.0.0"
 
 
 def discover() -> Catalog:
@@ -67,10 +76,16 @@ def sync(config: Dict[str, Any], state: Dict[str, Any], catalog: Catalog) -> Non
             singer.write_state({selected_stream.tap_stream_id: max_bookmark})
 
 
+def parse_args() -> argparse.Namespace:
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--version", action="version", version="%(prog)s v" + __version__)
+    parser.parse_known_args()
+    return cast(argparse.Namespace, utils.parse_args(REQUIRED_CONFIG_KEYS))
+
+
 @utils.handle_top_exception(LOGGER)
 def main() -> None:
-    # Parse command line arguments
-    args = utils.parse_args(REQUIRED_CONFIG_KEYS)
+    args = parse_args()
     config = dict(DEFAULT_CONFIG, **args.config)
 
     # If discover flag was passed, run discovery mode and dump output to stdout

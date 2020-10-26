@@ -1,15 +1,19 @@
 from datetime import date
 from typing import List
 
+from .replication_method import ReplicationMethod
+
 
 class ServerError(Exception):
     pass
 
 
-class InvalidReplicationKeyError(Exception):
-    def __init__(self, selected_replication_key: str, valid_replication_keys: List[str]):
+class InvalidReplicationMethodError(Exception):
+    def __init__(
+        self, selected_replication_method: ReplicationMethod, valid_replication_methods: List[ReplicationMethod]
+    ):
         super().__init__(
-            f"Invalid replication key selected '{selected_replication_key}', valid options are '{', '.join(valid_replication_keys)}'"
+            f"Invalid replication method selected '{selected_replication_method.name}', valid options are '{', '.join((method.name for method in valid_replication_methods))}'"
         )
 
 

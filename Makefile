@@ -30,19 +30,21 @@ sync:
 	    tap-nikabot -c config.json --catalog catalog.json
 
 lint:
-	black -l 120 tap_nikabot tests *.py; \
-	flake8 --exit-zero tap_nikabot tests *.py; \
-	mypy --strict tap_nikabot; \
-	pylint tap_nikabot --disable 'broad-except,chained-comparison,empty-docstring,fixme,invalid-name,line-too-long,missing-class-docstring,missing-function-docstring,missing-module-docstring,no-else-raise,no-else-return,too-few-public-methods,too-many-arguments,too-many-branches,too-many-lines,too-many-locals,ungrouped-imports,wrong-spelling-in-comment,wrong-spelling-in-docstring,bad-whitespace'
+	source $(VENV_ACTIVATE); \
+		black -l 120 tap_nikabot tests *.py; \
+		isort -rc tap_nikabot tests *.py; \
+		flake8 --exit-zero tap_nikabot tests *.py; \
+		mypy --strict tap_nikabot || true
 
 test: lint
-	coverage run -m pytest && \
+	source $(VENV_ACTIVATE); \
+        coverage run -m pytest; \
 		coverage report
 
 build: test
 	rm -rf dist
 	source $(VENV_ACTIVATE); \
-	python setup.py sdist
+        python setup.py sdist
 
 deploy: build
 	twine upload dist/*
@@ -50,8 +52,10 @@ deploy: build
 deploy-test: build
 	twine upload --repository-url https://test.pypi.org/legacy/ dist/*
 
-db:
-	docker run -e POSTGRES_PASSWORD=stitches -p 5432:5432 --rm postgres
+clean:
+	rm -rf .venv .pytest_cache .mypy_cache dist *.egg-info
+	find . -iname "*.pyc" -delete
+	find . -type d -name "__pycache__" -delete
 
-.PHONY: init discover sync lint test build deploy deploy-test db
+.PHONY: init discover sync lint test build deploy deploy-test clean
 .SILENT:

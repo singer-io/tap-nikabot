@@ -1,10 +1,11 @@
 import json
 import logging
-from unittest.mock import call, patch, MagicMock
+from unittest.mock import MagicMock, call, patch
 
 import pytest
 from singer.catalog import Catalog, CatalogEntry
 from singer.schema import Schema
+
 from tap_nikabot import sync
 
 LOGGER = logging.getLogger()
