@@ -35,8 +35,6 @@ class Stream(ABC):
             self.key_properties,
             valid_replication_keys=[self.replication_key] if self.replication_key else None,
         )
-        # Default to selected
-        stream_metadata = metadata.to_list(metadata.write(metadata.to_map(stream_metadata), (), "selected", True))
         catalog_entry = CatalogEntry(
             tap_stream_id=self.stream_id,
             stream=self.stream_id,
