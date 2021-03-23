@@ -5,7 +5,7 @@ setup(
     name="tap-nikabot",
     version="1.0.7",
     description="Singer.io tap for extracting data from Nikabot",
-    python_requires=">=3.8.0",
+    python_requires=">=3.6.0",
     author="Paul Heasley",
     author_email="paul@phdesign.com.au",
     url="https://github.com/singer-io/tap-nikabot",

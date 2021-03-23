@@ -5,7 +5,7 @@ ifneq ($(call get_python_version,$(PYTHON)), 3)
 	PYTHON = python3
 endif
 ifneq ($(call get_python_version,$(PYTHON)), 3)
-	$(error "No supported python found! Requires python v3.8+")
+	$(error "No supported python found! Requires python v3.6+")
 endif
 
 init:
@@ -23,7 +23,7 @@ lint:
 	flake8 --exit-zero tap_nikabot tests *.py; \
 	mypy --strict tap_nikabot || true
 
-pytest: lint
+pytest:
 	coverage run -m pytest; \
 	coverage report
 
