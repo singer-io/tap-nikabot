@@ -2,9 +2,7 @@
   "streams": [
     {
       "tap_stream_id": "users",
-      "key_properties": [
-        "id"
-      ],
+      "key_properties": ["id"],
       "schema": {
         "properties": {
           "create_date": {
@@ -62,6 +60,7 @@
           "role": {
             "type": "string"
           },
+          "settings": {},
           "team_id": {
             "type": "string"
           },
@@ -79,6 +78,9 @@
             "format": "date-time",
             "type": "string"
           },
+          "userType": {
+            "type": "string"
+          },
           "user_id": {
             "type": "string"
           }
@@ -90,208 +92,152 @@
         {
           "breadcrumb": [],
           "metadata": {
-            "table-key-properties": [
-              "id"
-            ],
+            "table-key-properties": ["id"],
             "inclusion": "available",
             "schema-name": "users",
             "selected": true
           }
         },
         {
-          "breadcrumb": [
-            "properties",
-            "create_date"
-          ],
+          "breadcrumb": ["properties", "create_date"],
           "metadata": {
             "inclusion": "available"
           }
         },
         {
-          "breadcrumb": [
-            "properties",
-            "created_at"
-          ],
+          "breadcrumb": ["properties", "created_at"],
           "metadata": {
             "inclusion": "available"
           }
         },
         {
-          "breadcrumb": [
-            "properties",
-            "custom_ref"
-          ],
+          "breadcrumb": ["properties", "custom_ref"],
           "metadata": {
             "inclusion": "available"
           }
         },
         {
-          "breadcrumb": [
-            "properties",
-            "deleted"
-          ],
+          "breadcrumb": ["properties", "deleted"],
           "metadata": {
             "inclusion": "available"
           }
         },
         {
-          "breadcrumb": [
-            "properties",
-            "groups"
-          ],
+          "breadcrumb": ["properties", "groups"],
           "metadata": {
             "inclusion": "available"
           }
         },
         {
-          "breadcrumb": [
-            "properties",
-            "id"
-          ],
+          "breadcrumb": ["properties", "id"],
           "metadata": {
             "inclusion": "automatic"
           }
         },
         {
-          "breadcrumb": [
-            "properties",
-            "is_admin"
-          ],
+          "breadcrumb": ["properties", "is_admin"],
           "metadata": {
             "inclusion": "available"
           }
         },
         {
-          "breadcrumb": [
-            "properties",
-            "is_checkin_excluded"
-          ],
+          "breadcrumb": ["properties", "is_checkin_excluded"],
           "metadata": {
             "inclusion": "available"
           }
         },
         {
-          "breadcrumb": [
-            "properties",
-            "is_nikabot_admin"
-          ],
+          "breadcrumb": ["properties", "is_nikabot_admin"],
           "metadata": {
             "inclusion": "available"
           }
         },
         {
-          "breadcrumb": [
-            "properties",
-            "is_restricted"
-          ],
+          "breadcrumb": ["properties", "is_restricted"],
           "metadata": {
             "inclusion": "available"
           }
         },
         {
-          "breadcrumb": [
-            "properties",
-            "is_ultra_restricted"
-          ],
+          "breadcrumb": ["properties", "is_ultra_restricted"],
           "metadata": {
             "inclusion": "available"
           }
         },
         {
-          "breadcrumb": [
-            "properties",
-            "last_eom_reminder"
-          ],
+          "breadcrumb": ["properties", "last_eom_reminder"],
           "metadata": {
             "inclusion": "available"
           }
         },
         {
-          "breadcrumb": [
-            "properties",
-            "last_feedback"
-          ],
+          "breadcrumb": ["properties", "last_feedback"],
           "metadata": {
             "inclusion": "available"
           }
         },
         {
-          "breadcrumb": [
-            "properties",
-            "name"
-          ],
+          "breadcrumb": ["properties", "name"],
           "metadata": {
             "inclusion": "available"
           }
         },
         {
-          "breadcrumb": [
-            "properties",
-            "presence"
-          ],
+          "breadcrumb": ["properties", "presence"],
           "metadata": {
             "inclusion": "available"
           }
         },
         {
-          "breadcrumb": [
-            "properties",
-            "role"
-          ],
+          "breadcrumb": ["properties", "role"],
           "metadata": {
             "inclusion": "available"
           }
         },
         {
-          "breadcrumb": [
-            "properties",
-            "team_id"
-          ],
+          "breadcrumb": ["properties", "settings"],
           "metadata": {
             "inclusion": "available"
           }
         },
         {
-          "breadcrumb": [
-            "properties",
-            "tz"
-          ],
+          "breadcrumb": ["properties", "team_id"],
           "metadata": {
             "inclusion": "available"
           }
         },
         {
-          "breadcrumb": [
-            "properties",
-            "tz_label"
-          ],
+          "breadcrumb": ["properties", "tz"],
           "metadata": {
             "inclusion": "available"
           }
         },
         {
-          "breadcrumb": [
-            "properties",
-            "tz_offset"
-          ],
+          "breadcrumb": ["properties", "tz_label"],
           "metadata": {
             "inclusion": "available"
           }
         },
         {
-          "breadcrumb": [
-            "properties",
-            "updated_at"
-          ],
+          "breadcrumb": ["properties", "tz_offset"],
           "metadata": {
             "inclusion": "available"
           }
         },
         {
-          "breadcrumb": [
-            "properties",
-            "user_id"
-          ],
+          "breadcrumb": ["properties", "updated_at"],
+          "metadata": {
+            "inclusion": "available"
+          }
+        },
+        {
+          "breadcrumb": ["properties", "userType"],
+          "metadata": {
+            "inclusion": "available"
+          }
+        },
+        {
+          "breadcrumb": ["properties", "user_id"],
           "metadata": {
             "inclusion": "available"
           }
@@ -300,9 +246,7 @@
     },
     {
       "tap_stream_id": "roles",
-      "key_properties": [
-        "id"
-      ],
+      "key_properties": ["id"],
       "schema": {
         "properties": {
           "id": {
@@ -322,37 +266,25 @@
         {
           "breadcrumb": [],
           "metadata": {
-            "table-key-properties": [
-              "id"
-            ],
+            "table-key-properties": ["id"],
             "inclusion": "available",
-            "schema-name": "roles",
-            "selected": true
+            "schema-name": "roles"
           }
         },
         {
-          "breadcrumb": [
-            "properties",
-            "id"
-          ],
+          "breadcrumb": ["properties", "id"],
           "metadata": {
             "inclusion": "automatic"
           }
         },
         {
-          "breadcrumb": [
-            "properties",
-            "name"
-          ],
+          "breadcrumb": ["properties", "name"],
           "metadata": {
             "inclusion": "available"
           }
         },
         {
-          "breadcrumb": [
-            "properties",
-            "team_id"
-          ],
+          "breadcrumb": ["properties", "team_id"],
           "metadata": {
             "inclusion": "available"
           }
@@ -361,9 +293,7 @@
     },
     {
       "tap_stream_id": "groups",
-      "key_properties": [
-        "id"
-      ],
+      "key_properties": ["id"],
       "schema": {
         "properties": {
           "id": {
@@ -383,37 +313,25 @@
         {
           "breadcrumb": [],
           "metadata": {
-            "table-key-properties": [
-              "id"
-            ],
+            "table-key-properties": ["id"],
             "inclusion": "available",
-            "schema-name": "groups",
-            "selected": true
+            "schema-name": "groups"
           }
         },
         {
-          "breadcrumb": [
-            "properties",
-            "id"
-          ],
+          "breadcrumb": ["properties", "id"],
           "metadata": {
             "inclusion": "automatic"
           }
         },
         {
-          "breadcrumb": [
-            "properties",
-            "name"
-          ],
+          "breadcrumb": ["properties", "name"],
           "metadata": {
             "inclusion": "available"
           }
         },
         {
-          "breadcrumb": [
-            "properties",
-            "team_id"
-          ],
+          "breadcrumb": ["properties", "team_id"],
           "metadata": {
             "inclusion": "available"
           }
@@ -422,9 +340,7 @@
     },
     {
       "tap_stream_id": "teams",
-      "key_properties": [
-        "id"
-      ],
+      "key_properties": ["id"],
       "schema": {
         "properties": {
           "activated_by": {
@@ -447,6 +363,7 @@
           "platform_id": {
             "type": "string"
           },
+          "settings": {},
           "status": {
             "type": "string"
           },
@@ -459,91 +376,67 @@
         {
           "breadcrumb": [],
           "metadata": {
-            "table-key-properties": [
-              "id"
-            ],
+            "table-key-properties": ["id"],
             "inclusion": "available",
-            "schema-name": "teams",
-            "selected": true
+            "schema-name": "teams"
           }
         },
         {
-          "breadcrumb": [
-            "properties",
-            "activated_by"
-          ],
+          "breadcrumb": ["properties", "activated_by"],
           "metadata": {
             "inclusion": "available"
           }
         },
         {
-          "breadcrumb": [
-            "properties",
-            "bot_token"
-          ],
+          "breadcrumb": ["properties", "bot_token"],
           "metadata": {
             "inclusion": "available"
           }
         },
         {
-          "breadcrumb": [
-            "properties",
-            "created_at"
-          ],
+          "breadcrumb": ["properties", "created_at"],
           "metadata": {
             "inclusion": "available"
           }
         },
         {
-          "breadcrumb": [
-            "properties",
-            "domain"
-          ],
+          "breadcrumb": ["properties", "domain"],
           "metadata": {
             "inclusion": "available"
           }
         },
         {
-          "breadcrumb": [
-            "properties",
-            "icon"
-          ],
+          "breadcrumb": ["properties", "icon"],
           "metadata": {
             "inclusion": "available"
           }
         },
         {
-          "breadcrumb": [
-            "properties",
-            "id"
-          ],
+          "breadcrumb": ["properties", "id"],
           "metadata": {
             "inclusion": "automatic"
           }
         },
         {
-          "breadcrumb": [
-            "properties",
-            "platform_id"
-          ],
+          "breadcrumb": ["properties", "platform_id"],
           "metadata": {
             "inclusion": "available"
           }
         },
         {
-          "breadcrumb": [
-            "properties",
-            "status"
-          ],
+          "breadcrumb": ["properties", "settings"],
           "metadata": {
             "inclusion": "available"
           }
         },
         {
-          "breadcrumb": [
-            "properties",
-            "subscription"
-          ],
+          "breadcrumb": ["properties", "status"],
+          "metadata": {
+            "inclusion": "available"
+          }
+        },
+        {
+          "breadcrumb": ["properties", "subscription"],
           "metadata": {
             "inclusion": "available"
           }
@@ -552,9 +445,7 @@
     },
     {
       "tap_stream_id": "projects",
-      "key_properties": [
-        "id"
-      ],
+      "key_properties": ["id"],
       "schema": {
         "properties": {
           "archived": {},
@@ -602,118 +493,79 @@
         {
           "breadcrumb": [],
           "metadata": {
-            "table-key-properties": [
-              "id"
-            ],
+            "table-key-properties": ["id"],
             "inclusion": "available",
-            "schema-name": "projects",
-            "selected": true
+            "schema-name": "projects"
           }
         },
         {
-          "breadcrumb": [
-            "properties",
-            "archived"
-          ],
+          "breadcrumb": ["properties", "archived"],
           "metadata": {
             "inclusion": "available"
           }
         },
         {
-          "breadcrumb": [
-            "properties",
-            "assigned_groups"
-          ],
+          "breadcrumb": ["properties", "assigned_groups"],
           "metadata": {
             "inclusion": "available"
           }
         },
         {
-          "breadcrumb": [
-            "properties",
-            "author"
-          ],
+          "breadcrumb": ["properties", "author"],
           "metadata": {
             "inclusion": "available"
           }
         },
         {
-          "breadcrumb": [
-            "properties",
-            "client"
-          ],
+          "breadcrumb": ["properties", "client"],
           "metadata": {
             "inclusion": "available"
           }
         },
         {
-          "breadcrumb": [
-            "properties",
-            "create_date"
-          ],
+          "breadcrumb": ["properties", "create_date"],
           "metadata": {
             "inclusion": "available"
           }
         },
         {
-          "breadcrumb": [
-            "properties",
-            "created_at"
-          ],
+          "breadcrumb": ["properties", "created_at"],
           "metadata": {
             "inclusion": "available"
           }
         },
         {
-          "breadcrumb": [
-            "properties",
-            "custom_ref"
-          ],
+          "breadcrumb": ["properties", "custom_ref"],
           "metadata": {
             "inclusion": "available"
           }
         },
         {
-          "breadcrumb": [
-            "properties",
-            "id"
-          ],
+          "breadcrumb": ["properties", "id"],
           "metadata": {
             "inclusion": "automatic"
           }
         },
         {
-          "breadcrumb": [
-            "properties",
-            "project_name"
-          ],
+          "breadcrumb": ["properties", "project_name"],
           "metadata": {
             "inclusion": "available"
           }
         },
         {
-          "breadcrumb": [
-            "properties",
-            "pto"
-          ],
+          "breadcrumb": ["properties", "pto"],
           "metadata": {
             "inclusion": "available"
           }
         },
         {
-          "breadcrumb": [
-            "properties",
-            "team_id"
-          ],
+          "breadcrumb": ["properties", "team_id"],
           "metadata": {
             "inclusion": "available"
           }
         },
         {
-          "breadcrumb": [
-            "properties",
-            "type"
-          ],
+          "breadcrumb": ["properties", "type"],
           "metadata": {
             "inclusion": "available"
           }
@@ -722,10 +574,7 @@
     },
     {
       "tap_stream_id": "records",
-      "replication_method": "FULL_TABLE",
-      "key_properties": [
-        "id"
-      ],
+      "key_properties": ["id"],
       "schema": {
         "properties": {
           "created_at": {
@@ -778,103 +627,67 @@
         {
           "breadcrumb": [],
           "metadata": {
-            "table-key-properties": [
-              "id"
-            ],
-            "valid-replication-keys": [
-              "date"
-            ],
+            "table-key-properties": ["id"],
             "inclusion": "available",
-            "schema-name": "records",
-            "selected": true
+            "schema-name": "records"
           }
         },
         {
-          "breadcrumb": [
-            "properties",
-            "created_at"
-          ],
+          "breadcrumb": ["properties", "created_at"],
           "metadata": {
             "inclusion": "available"
           }
         },
         {
-          "breadcrumb": [
-            "properties",
-            "date"
-          ],
+          "breadcrumb": ["properties", "date"],
           "metadata": {
             "inclusion": "available"
           }
         },
         {
-          "breadcrumb": [
-            "properties",
-            "edited"
-          ],
+          "breadcrumb": ["properties", "edited"],
           "metadata": {
             "inclusion": "available"
           }
         },
         {
-          "breadcrumb": [
-            "properties",
-            "hours"
-          ],
+          "breadcrumb": ["properties", "hours"],
           "metadata": {
             "inclusion": "available"
           }
         },
         {
-          "breadcrumb": [
-            "properties",
-            "id"
-          ],
+          "breadcrumb": ["properties", "id"],
           "metadata": {
             "inclusion": "automatic"
           }
         },
         {
-          "breadcrumb": [
-            "properties",
-            "info"
-          ],
+          "breadcrumb": ["properties", "info"],
           "metadata": {
             "inclusion": "available"
           }
         },
         {
-          "breadcrumb": [
-            "properties",
-            "project_id"
-          ],
+          "breadcrumb": ["properties", "project_id"],
           "metadata": {
             "inclusion": "available"
           }
         },
         {
-          "breadcrumb": [
-            "properties",
-            "project_name"
-          ],
+          "breadcrumb": ["properties", "project_name"],
           "metadata": {
             "inclusion": "available"
           }
         },
         {
-          "breadcrumb": [
-            "properties",
-            "team_id"
-          ],
+          "breadcrumb": ["properties", "team_id"],
           "metadata": {
             "inclusion": "available"
           }
         },
         {
-          "breadcrumb": [
-            "properties",
-            "user_id"
-          ],
+          "breadcrumb": ["properties", "user_id"],
           "metadata": {
             "inclusion": "available"
           }
@@ -883,3 +696,4 @@
     }
   ]
 }
+

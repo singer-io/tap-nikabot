@@ -62,13 +62,18 @@ This process uses the schema to determine which dates to reformat, if there is n
 
 ## Development
 
-A Makefile is provided to manage a virtual environment.
+A Makefile is provided to simplify development. Start by setting up a [virtual environment](https://docs.python.org/3/tutorial/venv.html) in `.venv`.
+
+```
+$ python -m venv .venv
+$ source .venv/bin/activate
+```
+
+Install the package and all (development and production) dependencies.
 
 ```
 $ make init
 ```
-
-Will setup a [virtual environment](https://docs.python.org/3/tutorial/venv.html) in `.venv` and install the package and all (development and production) dependencies.
 
 To run the linter / autoformatter (provided by [black](https://black.readthedocs.io/en/stable/))
 

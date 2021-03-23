@@ -14,17 +14,17 @@ jobs:
             python3 -mvenv /usr/local/share/virtualenvs/tap-nikabot
             source /usr/local/share/virtualenvs/tap-nikabot/bin/activate
             pip install -U 'pip<19.2' setuptools
-            pip install .[dev]
+            make init
       - run:
           name: 'pylint'
           command: |
             source /usr/local/share/virtualenvs/tap-nikabot/bin/activate
-            pylint tap_nikabot --disable 'broad-except,chained-comparison,empty-docstring,fixme,invalid-name,line-too-long,missing-class-docstring,missing-function-docstring,missing-module-docstring,no-else-raise,no-else-return,too-few-public-methods,too-many-arguments,too-many-branches,too-many-lines,too-many-locals,ungrouped-imports,wrong-spelling-in-comment,wrong-spelling-in-docstring,bad-whitespace'
+            make lint
       - run:
           name: 'unit-tests'
           command: |
             source /usr/local/share/virtualenvs/tap-nikabot/bin/activate
-            coverage run -m pytest && coverage report
+            make pytest
 
 workflows:
   version: 2
