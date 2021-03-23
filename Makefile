@@ -5,7 +5,7 @@ ifneq ($(call get_python_version,$(PYTHON)), 3)
 	PYTHON = python3
 endif
 ifneq ($(call get_python_version,$(PYTHON)), 3)
-	$(error "No supported python found! Requires python v3.6+")
+	$(error "No supported python found! Requires python v3.8+")
 endif
 
 init:

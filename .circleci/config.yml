@@ -8,7 +8,7 @@ jobs:
       - run:
           name: 'Setup virtual env'
           command: |
-            pyenv global 3.6.9
+            pyenv global 3.8.8
             pyenv rehash
             pip install awscli
             python3 -mvenv /usr/local/share/virtualenvs/tap-nikabot
