@@ -20,12 +20,6 @@ from ..typing import JsonResult
 LOGGER = singer.get_logger()
 
 
-def remove_schema_name(stream_metadata: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
-    compiled_metadata = metadata.to_map(stream_metadata)
-    metadata.delete(compiled_metadata, (), "schema-name")
-    return cast(List[Dict[str, Any]], metadata.to_list(compiled_metadata))
-
-
 class Stream(ABC):
     stream_id: str = ""
     key_properties: List[str] = ["id"]
@@ -37,13 +31,10 @@ class Stream(ABC):
     def get_catalog_entry(self, swagger: JsonResult) -> CatalogEntry:
         schema = self._map_to_schema(swagger)
         stream_metadata = metadata.get_standard_metadata(
-            schema.to_dict(),
-            self.stream_id,
-            self.key_properties,
+            schema=schema.to_dict(),
+            key_properties=self.key_properties,
             valid_replication_keys=[self.replication_key] if self.replication_key else None,
         )
-        # FIX: Remove schema_name else it breaks stitch data website
-        remove_schema_name(stream_metadata)
         catalog_entry = CatalogEntry(
             tap_stream_id=self.stream_id,
             stream=self.stream_id,
