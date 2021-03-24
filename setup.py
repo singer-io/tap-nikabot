@@ -3,7 +3,7 @@ from setuptools import find_packages, setup
 
 setup(
     name="tap-nikabot",
-    version="1.0.8",
+    version="1.0.7",
     description="Singer.io tap for extracting data from Nikabot",
     python_requires=">=3.6.0",
     author="Paul Heasley",
