@@ -9,7 +9,7 @@ ifneq ($(call get_python_version,$(PYTHON)), 3)
 endif
 
 init:
-	pip install .[dev]
+	pip install -e .[dev]
 
 discover:
 	tap-nikabot -c config.json --discover
@@ -17,17 +17,23 @@ discover:
 sync:
 	tap-nikabot -c config.json --catalog catalog.json
 
-lint:
-	black -l 120 tap_nikabot tests *.py; \
-	isort -rc tap_nikabot tests *.py; \
-	flake8 --exit-zero tap_nikabot tests *.py; \
-	mypy --strict tap_nikabot || true
+lint-ci:
+	pylint tap_nikabot tests *.py; \
+	mypy --strict tap_nikabot
 
-pytest:
+test-ci:
 	coverage run -m pytest; \
 	coverage report
 
-test: lint pytest
+lint:
+	black -l 120 tap_nikabot tests *.py; \
+	isort -rc tap_nikabot tests *.py; \
+	pylint --exit-zero tap_nikabot tests *.py; \
+	mypy --strict tap_nikabot || true
+
+test: lint
+	coverage run -m pytest; \
+	coverage report
 
 build: test
 	rm -rf dist
@@ -44,5 +50,5 @@ clean:
 	find . -iname "*.pyc" -delete
 	find . -type d -name "__pycache__" -delete
 
-.PHONY: init discover sync lint pytest test build deploy deploy-test clean
+.PHONY: init discover sync lint-ci test-ci lint test build deploy deploy-test clean
 .SILENT:

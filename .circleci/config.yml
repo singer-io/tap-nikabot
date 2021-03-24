@@ -19,12 +19,12 @@ jobs:
           name: 'pylint'
           command: |
             source /usr/local/share/virtualenvs/tap-nikabot/bin/activate
-            make lint
+            make lint-ci
       - run:
           name: 'unit-tests'
           command: |
             source /usr/local/share/virtualenvs/tap-nikabot/bin/activate
-            make pytest
+            make test-ci
 
 workflows:
   version: 2

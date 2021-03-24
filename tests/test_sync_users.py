@@ -1,3 +1,4 @@
+# pylint: disable=no-self-use
 import json
 import logging
 from unittest.mock import MagicMock, call, patch
