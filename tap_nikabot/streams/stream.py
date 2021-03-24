@@ -5,7 +5,6 @@ from typing import (
     Iterator,
     List,
     Optional,
-    cast,
 )
 
 import singer
