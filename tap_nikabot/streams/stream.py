@@ -5,6 +5,7 @@ from typing import (
     Iterator,
     List,
     Optional,
+    cast,
 )
 
 import singer
@@ -17,6 +18,12 @@ from ..replication_method import ReplicationMethod
 from ..typing import JsonResult
 
 LOGGER = singer.get_logger()
+
+
+def remove_schema_name(stream_metadata: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+    compiled_metadata = metadata.to_map(stream_metadata)
+    metadata.delete(compiled_metadata, (), "schema-name")
+    return cast(List[Dict[str, Any]], metadata.to_list(compiled_metadata))
 
 
 class Stream(ABC):
@@ -35,6 +42,8 @@ class Stream(ABC):
             self.key_properties,
             valid_replication_keys=[self.replication_key] if self.replication_key else None,
         )
+        # FIX: Remove schema_name else it breaks stitch data website
+        remove_schema_name(stream_metadata)
         catalog_entry = CatalogEntry(
             tap_stream_id=self.stream_id,
             stream=self.stream_id,

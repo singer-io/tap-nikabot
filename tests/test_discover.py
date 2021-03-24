@@ -53,3 +53,9 @@ class TestDiscover:
         assert catalog_entry.stream == "records"
         assert catalog_entry.schema.properties["hours"] is not None
         assert catalog_entry.schema.properties["edited"].properties["date"].type == "string"
+
+    def test_metadata_should_not_have_schema_name(self):
+        catalog = discover()
+        catalog_dict = catalog.to_dict()
+        has_schema_name = any(e for e in catalog_dict["streams"] if "schema-name" in e["metadata"][0]["metadata"])
+        assert not has_schema_name
