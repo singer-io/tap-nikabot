@@ -30,9 +30,8 @@ class Stream(ABC):
     def get_catalog_entry(self, swagger: JsonResult) -> CatalogEntry:
         schema = self._map_to_schema(swagger)
         stream_metadata = metadata.get_standard_metadata(
-            schema.to_dict(),
-            self.stream_id,
-            self.key_properties,
+            schema=schema.to_dict(),
+            key_properties=self.key_properties,
             valid_replication_keys=[self.replication_key] if self.replication_key else None,
         )
         catalog_entry = CatalogEntry(
