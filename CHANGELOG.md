@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.0.8
+- Remove schema name [#11](https://github.com/singer-io/tap-nikabot/pull/11)
+- Consolidate makefile and circle ci [#10](https://github.com/singer-io/tap-nikabot/pull/10)
+
 ## 1.0.7
 - Remove `selected: true` by default from the catalog [#8](https://github.com/singer-io/tap-nikabot/pull/8)
 
