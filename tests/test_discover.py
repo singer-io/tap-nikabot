@@ -1,3 +1,4 @@
+# pylint: disable=no-self-use
 import json
 
 import pytest
@@ -9,7 +10,9 @@ SWAGGER_DEFINITION = '{"swagger":"2.0","info":{"description":"Hi there, welcome 
 
 @pytest.fixture(autouse=True)
 def setup(requests_mock):
-    requests_mock.get("https://api.nikabot.com/v2/api-docs?group=public", json=json.loads(SWAGGER_DEFINITION))
+    requests_mock.get(
+        "https://api.nikabot.com/v2/api-docs?group=public", json=json.loads(SWAGGER_DEFINITION),
+    )
 
 
 class TestDiscover:

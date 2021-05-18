@@ -95,6 +95,7 @@ ENV/
 
 # IDE
 .idea/
+.vim/
 
 # Custom stuff
 env.sh
