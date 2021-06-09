@@ -46,7 +46,7 @@ class Records(Stream):
         self.validate_replication_method(replication_method)
 
         start_date = date.min
-        if "start_date" in config:
+        if "start_date" in config and config["start_date"]:
             start_date = isoparse(config["start_date"]).date()
 
         end_date = date.max
