@@ -128,6 +128,21 @@ class TestSyncRecords:
             ),
         ]
 
+    def test_should_not_error_when_end_date_is_empty(self, requests_mock, mock_catalog):
+        requests_mock.get(
+            "https://api.nikabot.com/api/v1/records?limit=1000&page=0&dateStart=20200611&dateEnd=99991231",
+            json=json.loads(EMPTY_RESPONSE),
+        )
+        config = {
+            "access_token": "my-access-token",
+            "page_size": 1000,
+            "start_date": "2020-06-11",
+            "end_date": "",
+        }
+        state = {}
+        sync(config, state, mock_catalog)
+        assert requests_mock.call_count == 1
+
     def test_should_raise_error_when_start_date_greater_than_end_date(self, mock_catalog):
         config = {
             "access_token": "my-access-token",

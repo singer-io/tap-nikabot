@@ -50,7 +50,7 @@ class Records(Stream):
             start_date = isoparse(config["start_date"]).date()
 
         end_date = date.max
-        if "end_date" in config:
+        if "end_date" in config and config["end_date"]:
             end_date = isoparse(config["end_date"]).date()
             if end_date < start_date:
                 raise StartDateAfterEndDateError(start_date, end_date)
